@@ -3,6 +3,7 @@
 #include <string>
 #include <cstdio>
 
+//TODO: add more types
 bool LuaValue::operator==(const LuaValue& rhs) const noexcept {
     if(type == rhs.type) {
         switch(type) {
@@ -26,7 +27,8 @@ bool LuaValue::operator==(const LuaValue& rhs) const noexcept {
 }
 
 //TODO: add more types
-LuaValue get_lua_value(const LuaScript& ls, int idx) {
+//TODO: move to constructor
+LuaValue get_lua_value(LuaScript& ls, int idx) {
     auto L = ls.L;
     auto type = lua_type(L, idx);
     any value;
@@ -41,6 +43,7 @@ LuaValue get_lua_value(const LuaScript& ls, int idx) {
             value = static_cast<bool>(lua_toboolean(L, idx));
             break;
         case LUA_TNIL:
+            //I don't think getting here is possible without manually instantiating a LuaValue
             value = nullptr;
             break;
         case LUA_TTABLE:
@@ -57,27 +60,58 @@ LuaValue get_lua_value(const LuaScript& ls, int idx) {
     return {type, value};
 }
 
-table_t get_lua_table(const LuaScript& ls, const char* t) {
+table_t get_lua_table(LuaScript& ls, const char* t) {
+    table_t table;
     auto L = ls.L;
     LUA_STACK_CHECK_START
-    table_t table;
     
+    //Push function onto stack
+    ls.exec(R"(
+return function(t)
+    local out = {}
+    local outidx = 1
+    local count = 0
+    for k,v in pairs(t) do
+        out[outidx] = {k,v}
+        outidx = outidx + 1
+        count = count + 1
+    end
+    return setmetatable(out, {__len = function() return count end})
+end
+)");
+    
+    //Push argument onto stack
     lua_getglobal(L, t);
     if(!lua_istable(L, -1)) {
+        //TODO: handle this without exiting
         printf("Not a table\n");
         exit(1);
     }
+    //Calls the function.  Now the out table is on the stack
+    lua_pcall(L, 1, 1, 1);
+//     lua_setglobal(L, "aaaa");
+//     
+//     ls.exec(R"(
+//         for k,v in pairs(aaaa) do
+//             io.write(k, "\n")
+//         end
+//        )");
+//     exit(1);
     auto t_idx = lua_gettop(L);
-    lua_pushnil(L);  /* first key */
     
-    while (lua_next(L, t_idx) != 0) {
-        /* uses 'key' (at index -2) and 'value' (at index -1) */
-        auto lv1 = get_lua_value(ls, -1);
-        auto lv2 = get_lua_value(ls, -2);
-        table[lv2] = lv1;
-//         table[get_lua_value(ls, -2)] = get_lua_value(ls, -1);
-        /* removes 'value'; keeps 'key' for next iteration */
-        lua_pop(L, 1);
+    //Get the length of the table.  Calls the __len metamethod, assigns the result, and pops it back off the stack
+    lua_len(L, -1);
+    int length = lua_tointeger(L, -1);
+    lua_pop(L, 1);
+    
+    for(int i = 1; i <= length; i++) {
+        lua_geti(L, t_idx, i);
+        lua_geti(L, -1, 1);
+        LuaValue lv1 = get_lua_value(ls, -1);
+        lua_geti(L, -2, 2);
+        LuaValue lv2 = get_lua_value(ls, -1);
+        lua_pop(L, 3);
+        table.insert({lv1, lv2});
     }
     lua_pop(L, 1);
     LUA_STACK_CHECK_END

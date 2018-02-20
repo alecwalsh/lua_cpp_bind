@@ -1,13 +1,6 @@
 #CMake
 build/
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
 
 #KDevelop
 .kdev4/
-glfwogltest2.kdev4
-
-#Executables
-glfwogltest2
+*.kdev4

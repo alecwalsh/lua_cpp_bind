@@ -15,6 +15,7 @@ struct LuaValue {
     int type;
     any value;
     
+    //TODO: add more types
     bool operator==(const LuaValue& rhs) const noexcept;
 };
 
@@ -25,7 +26,8 @@ namespace std {
         
         //TODO: implement this
         std::size_t operator()(const LuaValue& lv) const noexcept {
-            return 0;
+            return false;
+            return std::hash<LUA_NUMBER>()(std::any_cast<LUA_NUMBER>(lv.value));
         }
     };
 }
@@ -33,6 +35,6 @@ namespace std {
 using table_t = std::unordered_map<LuaValue, LuaValue>;
 
 //TODO: add more types
-LuaValue get_lua_value(const LuaScript& ls, int idx);
+LuaValue get_lua_value(LuaScript& ls, int idx);
 
-table_t get_lua_table(const LuaScript& ls, const char* t);
+table_t get_lua_table(LuaScript& ls, const char* t);
