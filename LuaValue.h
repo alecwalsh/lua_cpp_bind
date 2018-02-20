@@ -26,8 +26,16 @@ namespace std {
         
         //TODO: implement this
         std::size_t operator()(const LuaValue& lv) const noexcept {
-            return false;
-            return std::hash<LUA_NUMBER>()(std::any_cast<LUA_NUMBER>(lv.value));
+            switch(lv.type) {
+                case LUA_TNUMBER:
+                    return std::hash<LUA_NUMBER>()(any_cast<LUA_NUMBER>(lv.value));
+                case LUA_TBOOLEAN:
+                    return std::hash<bool>()(any_cast<bool>(lv.value));
+                case LUA_TSTRING:
+                    return std::hash<std::string>()(any_cast<std::string>(lv.value));
+                default:
+                    return 0;
+            }
         }
     };
 }
