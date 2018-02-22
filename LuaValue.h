@@ -17,7 +17,11 @@ struct LuaValue {
     
     //TODO: add more types
     bool operator==(const LuaValue& rhs) const noexcept;
+    
+    std::string str() const;
 };
+
+std::ostream& operator<<(std::ostream& o, const LuaValue& lv);
 
 namespace std {
     template<> struct hash<LuaValue> {
@@ -39,10 +43,3 @@ namespace std {
         }
     };
 }
-
-using table_t = std::unordered_map<LuaValue, LuaValue>;
-
-//TODO: add more types
-LuaValue get_lua_value(LuaScript& ls, int idx);
-
-table_t get_lua_table(LuaScript& ls, const char* t);

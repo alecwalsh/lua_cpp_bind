@@ -1,6 +1,8 @@
 #include "LuaValue.h"
+#include "LuaTable.h"
 
 #include <string>
+#include <exception>
 #include <cstdio>
 
 //TODO: add more types
@@ -60,60 +62,31 @@ LuaValue get_lua_value(LuaScript& ls, int idx) {
     return {type, value};
 }
 
-table_t get_lua_table(LuaScript& ls, const char* t) {
-    table_t table;
-    auto L = ls.L;
-    LUA_STACK_CHECK_START
-    
-    //Push function onto stack
-    ls.exec(R"(
-return function(t)
-    local out = {}
-    local outidx = 1
-    local count = 0
-    for k,v in pairs(t) do
-        out[outidx] = {k,v}
-        outidx = outidx + 1
-        count = count + 1
-    end
-    return setmetatable(out, {__len = function() return count end})
-end
-)");
-    
-    //Push argument onto stack
-    lua_getglobal(L, t);
-    if(!lua_istable(L, -1)) {
-        //TODO: handle this without exiting
-        printf("Not a table\n");
-        exit(1);
+//TODO: Add more types
+std::string LuaValue::str() const {
+    if(!value.has_value()) {
+        throw std::runtime_error("Error: doesn't contain a value");
     }
-    //Calls the function.  Now the out table is on the stack
-    lua_pcall(L, 1, 1, 1);
-//     lua_setglobal(L, "aaaa");
-//     
-//     ls.exec(R"(
-//         for k,v in pairs(aaaa) do
-//             io.write(k, "\n")
-//         end
-//        )");
-//     exit(1);
-    auto t_idx = lua_gettop(L);
-    
-    //Get the length of the table.  Calls the __len metamethod, assigns the result, and pops it back off the stack
-    lua_len(L, -1);
-    int length = lua_tointeger(L, -1);
-    lua_pop(L, 1);
-    
-    for(int i = 1; i <= length; i++) {
-        lua_geti(L, t_idx, i);
-        lua_geti(L, -1, 1);
-        LuaValue lv1 = get_lua_value(ls, -1);
-        lua_geti(L, -2, 2);
-        LuaValue lv2 = get_lua_value(ls, -1);
-        lua_pop(L, 3);
-        table.insert({lv1, lv2});
+    switch(type) {
+        case LUA_TNUMBER:
+            return std::to_string(any_cast<LUA_NUMBER>(value));
+            break;
+        case LUA_TBOOLEAN:
+            return any_cast<bool>(value) ? "true" : "false";
+            break;
+        case LUA_TSTRING:
+            return any_cast<std::string>(value);
+            break;
+        case LUA_TNIL:
+            return "nil";
+            break;
+        default:
+            return "Other lua type";
+            break;
     }
-    lua_pop(L, 1);
-    LUA_STACK_CHECK_END
-    return table;
+}
+
+std::ostream& operator<<(std::ostream& o, const LuaValue& lv) {
+    o << lv.str();
+    return o;
 }
