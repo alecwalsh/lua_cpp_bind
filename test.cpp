@@ -14,6 +14,16 @@ int main() {
     
     std::cout << r << std::endl;
     
+    ls.Register("test", []{std::cout << "Hello from Lua" << std::endl;});
+//     ls.Register("test", [](int i){std::cout << "Hello from Lua" << i << std::endl;});
+    
+//     lua_pushstring(ls.L, "upvalue");
+//     lua_pushstring(ls.L, "upvalue2");
+//     lua_pushcfunction(ls.L, [](lua_State* L)->int{std::cout << "top: " << lua_gettop(L) << std::endl;return 0;});
+//     lua_setglobal(ls.L, "cpp1");
+    
+    ls.exec("call_cpp()");
+    
     for(const auto [t1, t2] : table) {
         std::cout << t1 << " => " << t2 << std::endl;
     }

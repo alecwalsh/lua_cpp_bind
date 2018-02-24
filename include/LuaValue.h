@@ -12,6 +12,7 @@ using boost::any_cast;
 #include "LuaScript.h"
 
 struct LuaValue {
+    //TODO: use LuaScript::Type instead of int
     int type;
     any value;
     

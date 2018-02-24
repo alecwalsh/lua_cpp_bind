@@ -86,13 +86,17 @@ void LuaScript::SetupBinding() {
     lua_newtable(L);
     lua_setglobal(L, "metacpp");
     
-    luaL_dostring(L, "function metacpp.__newindex(table, key, value)\n"
-                                                    "set_cpp(key, value)\n"
-                                                    "end");
+    luaL_dostring(L, R"(
+        function metacpp.__newindex(table, key, value)
+            set_cpp(key, value)
+        end
+    )");
     
-    luaL_dostring(L, "function metacpp.__index(table, key)\n"
-                                                "return get_cpp(key)\n"
-                                                "end");
+    luaL_dostring(L, R"(
+        function metacpp.__index(table, key)
+            return get_cpp(key)
+        end
+    )");
     
     lua_getglobal(L, "cpp");
     lua_getglobal(L, "metacpp");
@@ -105,9 +109,16 @@ void LuaScript::SetupBinding() {
 
 int call_cpp(lua_State* L) {
     LUA_STACK_CHECK_START
-    int name_idx = lua_upvalueindex(1);
+    auto name = lua_tostring(L, lua_upvalueindex(1));
     int methodMap_idx = lua_upvalueindex(2);
-    std::string name = lua_tostring(L, name_idx);
+    
+    //__call always has its table as the first argument
+    int expectedargs = lua_tointeger(L, lua_upvalueindex(3));
+    int numargs = lua_gettop(L) - 1;
+    if(expectedargs != numargs) {
+        printf("Error: incorrect number of arguments:\n%s called with %d arguments, expected %d\n", name, numargs, expectedargs);
+        exit(EXIT_FAILURE);
+    }
     
     auto& methodMap = *static_cast<std::unordered_map<std::string, std::function<void()>>*> (lua_touserdata(L, methodMap_idx));
     methodMap[name]();

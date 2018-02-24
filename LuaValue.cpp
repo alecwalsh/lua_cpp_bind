@@ -64,7 +64,7 @@ LuaValue get_lua_value(LuaScript& ls, int idx) {
 
 //TODO: Add more types
 std::string LuaValue::str() const {
-    if(!value.has_value()) {
+    if(!value.has_value() && type != LUA_TNIL) {
         throw std::runtime_error("Error: doesn't contain a value");
     }
     switch(type) {

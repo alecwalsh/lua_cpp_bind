@@ -1,12 +1,12 @@
 #include <type_traits>
 #include <cstddef>
 
-//Utility class for finding details of a callable type, such as the return type, argument types, and number of arguments
+//Utility classes for finding details of a callable type, such as the return type, argument types, and number of arguments
 
 
 //Stores a parameter pack
-template<typename...>
-struct pack{};
+template<typename... Args>
+struct pack{pack() = delete;};
 
 //Gets the type of an element in a pack
 template<std::size_t, typename...>
@@ -24,6 +24,17 @@ struct pack_element<0, pack<Head, Tail...>> {
 
 template<std::size_t I, typename... Ts>
 using pack_element_t = typename pack_element<I, Ts...>::type;
+
+template<typename T>
+struct pack_size;
+
+template<typename... Args>
+struct pack_size<pack<Args...>> {
+    static constexpr auto size = sizeof...(Args);
+};
+
+template<typename T>
+constexpr auto pack_size_v = pack_size<T>::size;;
 
 
 //Removes the const from a member function pointer's type
