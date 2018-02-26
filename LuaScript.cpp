@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "LuaScript.h"
+#include "LuaFunction.h"
 
 int error_handler(lua_State *L) {
     //Prints the error message and returns the error object unchanged
@@ -106,22 +107,21 @@ void LuaScript::SetupBinding() {
     LUA_STACK_CHECK_END
 }
 
-
+//TODO: Pass lua arguments to cpp
 int call_cpp(lua_State* L) {
     LUA_STACK_CHECK_START
     auto name = lua_tostring(L, lua_upvalueindex(1));
     int methodMap_idx = lua_upvalueindex(2);
     
-    //__call always has its table as the first argument
-    int expectedargs = lua_tointeger(L, lua_upvalueindex(3));
-    int numargs = lua_gettop(L) - 1;
-    if(expectedargs != numargs) {
-        printf("Error: incorrect number of arguments:\n%s called with %d arguments, expected %d\n", name, numargs, expectedargs);
-        exit(EXIT_FAILURE);
-    }
+    std::cout << "Stack top = " << lua_gettop(L) << std::endl;
     
-    auto& methodMap = *static_cast<std::unordered_map<std::string, std::function<void()>>*> (lua_touserdata(L, methodMap_idx));
-    methodMap[name]();
+//     for(int i = 1; i <= lua_gettop(L); i++) {
+//         std::cout << lua_typename(L, lua_type(L,i)) << std::endl;
+//     }
+        
+    auto& methodMap = *static_cast<std::unordered_map<std::string, LuaFunctionAndTypes*>*> (lua_touserdata(L, methodMap_idx));
+    methodMap[name]->func->apply(L);
+    
     LUA_STACK_CHECK_END
     return 0;
 }
@@ -145,10 +145,10 @@ int set_cpp(lua_State* L) {
     switch(propertyValueType.second) {
         //TODO: handle tables
         using Type = LuaScript::Type;
-        case Type::Integer:
-            *((int*)propertyValueType.first) = lua_tointeger(L, 2);
-            break;
-        case Type::Float:
+//         case Type::Integer:
+//             *((int*)propertyValueType.first) = lua_tointeger(L, 2);
+//             break;
+        case Type::Number:
             *((float*)propertyValueType.first) = lua_tonumber(L, 2);
             break;
         case Type::String:
@@ -186,10 +186,10 @@ int get_cpp(lua_State* L) {
     switch(propertyValueType.second) {
         //TODO: handle tables
         using Type = LuaScript::Type;
-        case Type::Integer:
-            lua_pushinteger(L, *((int*)propertyValueType.first));
-            break;
-        case Type::Float:
+//         case Type::Integer:
+//             lua_pushinteger(L, *((int*)propertyValueType.first));
+//             break;
+        case Type::Number:
             lua_pushnumber(L, *((float*)propertyValueType.first));
             break;
         case Type::String:

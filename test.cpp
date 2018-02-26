@@ -8,14 +8,14 @@
 int main() {
     LuaScript ls{"../test.lua"};
     
-    auto table = LuaTable(ls, "gl_version");
+//     auto table = LuaTable(ls, "gl_version");
     
-    auto r = table["abc"];
+//     auto r = table["abc"];
+//     
+//     std::cout << r << std::endl;
     
-    std::cout << r << std::endl;
-    
-    ls.Register("test", []{std::cout << "Hello from Lua" << std::endl;});
-//     ls.Register("test", [](int i){std::cout << "Hello from Lua" << i << std::endl;});
+//     ls.Register("test", []{std::cout << "Hello from Lua" << std::endl;});
+    ls.Register("test", [](double i, bool j){std::cout << "Hello from Lua " << i << std::endl;});
     
 //     lua_pushstring(ls.L, "upvalue");
 //     lua_pushstring(ls.L, "upvalue2");
@@ -24,9 +24,9 @@ int main() {
     
     ls.exec("call_cpp()");
     
-    for(const auto [t1, t2] : table) {
-        std::cout << t1 << " => " << t2 << std::endl;
-    }
+//     for(const auto [t1, t2] : table) {
+//         std::cout << t1 << " => " << t2 << std::endl;
+//     }
 
 //     ls.exec("io.write(\"a\")");
     return 0;

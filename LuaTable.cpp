@@ -46,9 +46,9 @@ end
     for(int i = 1; i <= length; i++) {
         lua_geti(L, t_idx, i);
         lua_geti(L, -1, 1);
-        LuaValue lv1 = get_lua_value(ls, -1);
+        LuaValue lv1 = LuaValue(ls.L, -1);
         lua_geti(L, -2, 2);
-        LuaValue lv2 = get_lua_value(ls, -1);
+        LuaValue lv2 = LuaValue(ls.L, -1);
         lua_pop(L, 3);
         table.insert({lv1, lv2});
     }

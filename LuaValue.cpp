@@ -1,4 +1,5 @@
 #include "LuaValue.h"
+#include "LuaValue2.h"
 #include "LuaTable.h"
 
 #include <string>
@@ -29,11 +30,9 @@ bool LuaValue::operator==(const LuaValue& rhs) const noexcept {
 }
 
 //TODO: add more types
-//TODO: move to constructor
-LuaValue get_lua_value(LuaScript& ls, int idx) {
-    auto L = ls.L;
-    auto type = lua_type(L, idx);
-    any value;
+LuaValue::LuaValue(lua_State* L, int idx) {
+    type = lua_type(L, idx);
+    std::cout << "Type is " << lua_typename(L, type) << std::endl;
     switch(type) {
         case LUA_TNUMBER:
             value = lua_tonumber(L, idx);
@@ -59,7 +58,6 @@ LuaValue get_lua_value(LuaScript& ls, int idx) {
             printf("Lua value has invalid type\n");
             exit(1);
     }
-    return {type, value};
 }
 
 //TODO: Add more types
