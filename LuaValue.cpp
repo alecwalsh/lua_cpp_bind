@@ -1,5 +1,4 @@
 #include "LuaValue.h"
-#include "LuaValue2.h"
 #include "LuaTable.h"
 
 #include <string>

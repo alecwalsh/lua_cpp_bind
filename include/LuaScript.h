@@ -12,6 +12,7 @@
 
 #include "LuaTypes.h"
 #include "LuaFunction.h"
+#include "LuaValue.h"
 
 #include "function_type_utils.h"
 
@@ -67,20 +68,6 @@ template<typename T>
 void LuaScript::Register(std::string name, T ptr, Type type) {
     propertyMap.insert({name, {ptr, type}});
 }
-
-// template<typename R, typename T, typename... Args>
-// void LuaScript::Register(std::string name, mptr_t<R,T> mptr, T* obj, Args&&... args) {
-//     LUA_STACK_CHECK_START
-//     //Creates a lambda that calls mptr on obj with args
-//     //Args is passed by reference, so you can change them after calling Register
-//     methodMap.insert({name, [=, &args...](){return (obj->*mptr)(std::forward<Args>(args)...);}});
-//     
-//     lua_pushstring(L, name.c_str());
-//     lua_pushlightuserdata(L, &methodMap);
-//     lua_pushcclosure(L, call_cpp, 2);
-//     lua_setglobal(L, name.c_str());
-//     LUA_STACK_CHECK_END
-// }
 
 template<typename R, typename... Args>
 std::unique_ptr<LuaFunctionAndTypes> createLuaFunctionAndTypes(std::function<R(Args...)> f) {

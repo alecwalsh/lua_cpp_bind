@@ -1,5 +1,6 @@
 #pragma once
-#include "LuaValue2.h"
+#include "LuaScript.h"
+#include "LuaValue.h"
 using table_t = std::unordered_map<LuaValue, LuaValue>;
 
 struct LuaTable {

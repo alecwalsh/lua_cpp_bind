@@ -5,34 +5,24 @@
 #include "LuaScript.h"
 #include "LuaFunction.h"
 
-int error_handler(lua_State *L) {
-    //Prints the error message and returns the error object unchanged
-    const char *msg = lua_tostring(L, -1);
-    if(msg != NULL) {
-        printf("%s\n", msg);
-    }
-    return 1;
-}
-
 LuaScript::LuaScript() {
     L = luaL_newstate();
     luaL_openlibs(L);
     
     //Push error handler
-    lua_pushcfunction(L, error_handler);
+    lua_pushcfunction(L, [](lua_State *L) {
+            //Prints the error message and returns the error object unchanged
+            const char *msg = lua_tostring(L, -1);
+            if(msg != NULL) {
+                printf("%s\n", msg);
+            }
+            return 1;
+        });
     
     SetupBinding();
 }
 
-LuaScript::LuaScript(std::string fileName) {
-    L = luaL_newstate();
-    luaL_openlibs(L);
-    
-    //Push error handler
-    lua_pushcfunction(L, error_handler);
-    
-    SetupBinding();
-    
+LuaScript::LuaScript(std::string fileName) : LuaScript() {
     auto err = luaL_loadfile(L, fileName.c_str());
     if(err != LUA_OK) {
         switch(err) {
@@ -73,37 +63,34 @@ void LuaScript::exec(std::string code) {
 
 void LuaScript::SetupBinding() {
     LUA_STACK_CHECK_START
-    lua_pushlightuserdata(L, &propertyMap);
-    lua_pushcclosure(L, set_cpp, 1);
-    lua_setglobal(L, "set_cpp");
     
-    lua_pushlightuserdata(L, &propertyMap);
-    lua_pushcclosure(L, get_cpp, 1);
-    lua_setglobal(L, "get_cpp");
-    
+    //Create two tables.  One will be a regular table and the other will be its metatable
     lua_newtable(L);
+    lua_newtable(L);
+    
+    //Push a pointer to propertyMap onto the stack.  Duplicate it because we call lua_pushcclosure twice
+    lua_pushlightuserdata(L, &propertyMap);
+    lua_pushvalue(L, -1);
+    
+    //Set the __newindex and __index metamethods
+    lua_pushcclosure(L, [](lua_State* L) {
+            //This function takes 3 arguments, but set_cpp only needs the 2nd and 3rd
+            lua_remove(L, -3);
+            return set_cpp(L);
+        }, 1);
+    lua_setfield(L, -3, "__newindex");
+    
+    lua_pushcclosure(L, [](lua_State* L){
+            //This function takes 2 arguments, but get_cpp only needs the 2nd
+            lua_remove(L, -2);
+            return get_cpp(L);
+        }, 1);
+    lua_setfield(L, -2, "__index");
+    
+    //Now set the table at the top of the stack as the metatable of the other one, then give it a name
+    lua_setmetatable(L, -2);
     lua_setglobal(L, "cpp");
     
-    lua_newtable(L);
-    lua_setglobal(L, "metacpp");
-    
-    luaL_dostring(L, R"(
-        function metacpp.__newindex(table, key, value)
-            set_cpp(key, value)
-        end
-    )");
-    
-    luaL_dostring(L, R"(
-        function metacpp.__index(table, key)
-            return get_cpp(key)
-        end
-    )");
-    
-    lua_getglobal(L, "cpp");
-    lua_getglobal(L, "metacpp");
-    
-    lua_setmetatable(L, -2);
-    lua_pop(L, 1);
     LUA_STACK_CHECK_END
 }
 
