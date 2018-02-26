@@ -58,14 +58,14 @@ struct type_to_lua_type<void> {
 };
 
 namespace detail {
-    template<typename Pack, std::size_t... I>
-    auto get_lua_types_impl(Pack&& p, std::index_sequence<I...>) -> std::vector<LuaType> {
-        return {type_to_lua_type_v<pack_element_t<I, std::decay_t<decltype(p)>>>...};
+    template<typename P, std::size_t... I>
+    std::vector<LuaType> get_lua_types_impl(std::index_sequence<I...>) {
+        return {type_to_lua_type_v<pack_element_t<I, P>>...};
     }
 }
 
 //Takes a pack of arguments and returns of vector of their Lua types
-template<typename... Args>
-auto get_lua_types(pack<Args...> p) -> std::vector<LuaType> {
-    return detail::get_lua_types_impl(p, std::make_index_sequence<pack_size_v<std::decay_t<pack<Args...>>>>{});
+template<typename P>
+std::vector<LuaType> get_lua_types() {
+    return detail::get_lua_types_impl<P>(std::make_index_sequence<pack_size_v<P>>{});
 }

@@ -112,12 +112,6 @@ int call_cpp(lua_State* L) {
     LUA_STACK_CHECK_START
     auto name = lua_tostring(L, lua_upvalueindex(1));
     int methodMap_idx = lua_upvalueindex(2);
-    
-    std::cout << "Stack top = " << lua_gettop(L) << std::endl;
-    
-//     for(int i = 1; i <= lua_gettop(L); i++) {
-//         std::cout << lua_typename(L, lua_type(L,i)) << std::endl;
-//     }
         
     auto& methodMap = *static_cast<std::unordered_map<std::string, LuaFunctionAndTypes*>*> (lua_touserdata(L, methodMap_idx));
     methodMap[name]->func->apply(L);

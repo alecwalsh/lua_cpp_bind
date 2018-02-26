@@ -4,6 +4,7 @@
 #include <functional>
 #include <utility>
 #include <tuple>
+#include <memory>
 
 #include <cassert>
 
@@ -64,7 +65,7 @@ public:
 private:
     void SetupBinding();
     std::unordered_map<std::string, std::pair<void*, Type>> propertyMap;
-    std::unordered_map<std::string, LuaFunctionAndTypes*> methodMap;
+    std::unordered_map<std::string, std::unique_ptr<LuaFunctionAndTypes>> methodMap;
 };
 
 template<typename T>
@@ -87,11 +88,10 @@ void LuaScript::Register(std::string name, T ptr, Type type) {
 // }
 
 template<typename R, typename... Args>
-LuaFunctionAndTypes* createLuaFunctionAndTypes(std::function<R(Args...)> f) {
+std::unique_ptr<LuaFunctionAndTypes> createLuaFunctionAndTypes(std::function<R(Args...)> f) {
     using args_type = typename function_type<decltype(f)>::args_type;
-    using return_type = typename function_type<decltype(f)>::return_type;
     
-    return new LuaFunctionAndTypes{new LuaFunction<R(Args...)>{f}, type_to_lua_type_v<return_type>, get_lua_types(args_type{})};
+    return std::unique_ptr<LuaFunctionAndTypes>(new LuaFunctionAndTypes{std::make_unique<LuaFunction<R(Args...)>>(f), get_lua_types<args_type>()});
 }
 
 template<typename F>
