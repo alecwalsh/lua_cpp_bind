@@ -142,7 +142,7 @@ int set_cpp(lua_State* L) {
 //         case Type::Integer:
 //             *((int*)propertyValueType.first) = lua_tointeger(L, 2);
 //             break;
-        case Type::Number:
+        case Type::Float:
             *((float*)propertyValueType.first) = lua_tonumber(L, 2);
             break;
         case Type::String:
@@ -183,7 +183,7 @@ int get_cpp(lua_State* L) {
 //         case Type::Integer:
 //             lua_pushinteger(L, *((int*)propertyValueType.first));
 //             break;
-        case Type::Number:
+        case Type::Float:
             lua_pushnumber(L, *((float*)propertyValueType.first));
             break;
         case Type::String:
