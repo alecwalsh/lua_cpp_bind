@@ -21,7 +21,7 @@ enum class LuaType {
     Nil = 0,
     Bool = 1,
     LightUserdata = 2,
-    Number = 3,
+    Float = 3,
     String = 4,
     Table = 5,
 };
@@ -34,12 +34,12 @@ constexpr auto type_to_lua_type_v = type_to_lua_type<T>::value;
 
 template<>
 struct type_to_lua_type<int> {
-    static constexpr auto value = LuaType::Number;
+    static constexpr auto value = LuaType::Float;
 };
 
 template<>
 struct type_to_lua_type<double> {
-    static constexpr auto value = LuaType::Number;
+    static constexpr auto value = LuaType::Float;
 };
 
 template<>

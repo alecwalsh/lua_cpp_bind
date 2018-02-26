@@ -48,11 +48,6 @@ public:
     template<typename T>
     void Register(std::string name, T ptr, Type type);
     
-    //TODO: Can't change the object the member function is called on
-    //Register a member function
-    template<typename R, typename T, typename... Args>
-    void Register(std::string name, mptr_t<R,T> mptr, T* obj, Args&&... args);
-    
     //Register any Callable
     template<typename F>
     void Register(std::string name, F&& f);
@@ -99,11 +94,6 @@ void LuaScript::Register(std::string name, F&& f) {
     LUA_STACK_CHECK_START
     methodMap.insert({name, createLuaFunctionAndTypes(std::function(f))});
     
-//     using args_type = typename function_type<decltype(f)>::args_type;
-//     using return_type = typename function_type<decltype(f)>::return_type;
-//     //TODO: replace with full userdata, use __gc metamethod to free
-//     auto function_type_tuple = new std::tuple<LuaScript::Type, std::vector<LuaScript::Type>>{type_to_lua_type_v<return_type>, get_lua_types(args_type{})};
-    
     //Create a table
     lua_createtable(L, 0, 0);
     auto table_idx = lua_gettop(L);
@@ -114,7 +104,6 @@ void LuaScript::Register(std::string name, F&& f) {
     lua_pushstring(L, "__call");
     lua_pushstring(L, name.c_str());
     lua_pushlightuserdata(L, &methodMap);
-//     lua_pushlightuserdata(L, function_type_tuple);
     lua_pushcclosure(L, call_cpp, 2);
     lua_settable(L, metatable_idx);
 
@@ -123,10 +112,6 @@ void LuaScript::Register(std::string name, F&& f) {
     lua_pushstring(L, "numargs");
     lua_pushinteger(L, function_type<F>::numargs);
     lua_settable(L, table_idx);
-    
-//     lua_pushstring(L, "type");
-//     lua_pushlightuserdata(L, function_type_tuple);
-//     lua_settable(L, table_idx);
     
     lua_setglobal(L, name.c_str());
     LUA_STACK_CHECK_END

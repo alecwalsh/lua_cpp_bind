@@ -13,5 +13,3 @@ struct LuaTable {
 
 //TODO: add more types
 LuaValue get_lua_value(LuaScript& ls, int idx);
-
-table_t get_lua_table(LuaScript& ls, const char* t);
