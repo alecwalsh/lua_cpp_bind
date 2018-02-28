@@ -63,6 +63,9 @@ private:
     using type_without_const_ref = remove_const_mptr_t<decltype(&std::remove_reference_t<F>::operator())>;
 public:
     static constexpr int numargs = function_type<type_without_const_ref>::numargs;
+    //R(Args...)
+    using type = typename function_type<type_without_const_ref>::type;
+    //Return type and types of the arguments
     using return_type = typename function_type<type_without_const_ref>::return_type;
     using args_type = typename function_type<type_without_const_ref>::args_type;
 };
@@ -70,6 +73,7 @@ public:
 template<typename R, typename C, typename... Args>
 struct function_type<R(C::*)(Args...)> {
     static constexpr int numargs = sizeof...(Args);
+    using type = R(Args...);
     using return_type = R;
     using args_type = pack<Args...>;
 };
@@ -77,9 +81,13 @@ struct function_type<R(C::*)(Args...)> {
 template<typename R, typename... Args>
 struct function_type<R(Args...)> {
     static constexpr int numargs = sizeof...(Args);
+    using type = R(Args...);
     using return_type = R;
     using args_type = pack<Args...>;
 };
+
+template<typename F>
+using function_type_t = typename function_type<F>::type;
 
 //Create a template using a pack as template arguments
 //Example:

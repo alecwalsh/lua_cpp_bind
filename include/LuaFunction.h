@@ -61,7 +61,7 @@ private:
         //So we need to start at 2
         args_array = {{LuaValue{L, ((int)I)+2}...}};
 
-        f(std::any_cast<pack_element_t<I, std::decay_t<P>>>(args_array[I].value)...);
+        f(any_cast<pack_element_t<I, std::decay_t<P>>>(args_array[I].value)...);
     }
 public:
     template<typename F>

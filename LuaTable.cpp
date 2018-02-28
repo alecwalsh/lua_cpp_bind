@@ -1,5 +1,7 @@
 #include "LuaTable.h"
 
+#include <string>
+
 LuaValue LuaTable::operator[](int i) {
     return table[LuaValue{LUA_TNUMBER, static_cast<double>(i)}];
 }
