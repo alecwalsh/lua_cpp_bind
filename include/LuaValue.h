@@ -10,7 +10,8 @@ using boost::any_cast;
 #endif
 
 #include <lua.hpp>
-#include <iostream>
+
+#include <ostream>
 #include <unordered_map>
 #include <string>
 

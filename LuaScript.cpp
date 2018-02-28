@@ -1,5 +1,4 @@
-﻿#include <lua.hpp>
-#include <iostream>
+﻿#include <iostream>
 #include <cassert>
 
 #include "LuaScript.h"

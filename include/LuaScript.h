@@ -8,8 +8,6 @@
 
 #include <cassert>
 
-#include <lua.hpp>
-
 #include "LuaTypes.h"
 #include "LuaFunction.h"
 #include "LuaValue.h"

@@ -11,30 +11,18 @@
 #include <memory>
 #include <cassert>
 
-#include "lua.hpp"
 #include "LuaTypes.h"
 #include "LuaValue.h"
 
 #include "function_type_utils.h"
 
-// template<typename...>
-// struct apply_tail;
-// 
-// template<typename Head, typename... Tail>
-// struct apply_tail {
-//     
-// };
-
 struct LuaFunctionBase {
     virtual void apply(lua_State* L) = 0;
 };
 
-//Stores a LuaFunction, its return type, and its argument types
+//Stores a LuaFunction and its argument types
 struct LuaFunctionAndTypes {
-//     LuaFunctionAndTypes(std::unique_ptr<LuaFunctionBase> func, LuaType return_type, std::vector<LuaType> args_types) : func(std::move(func)), return_type(return_type), args_types(args_types) {}
-//     LuaFunctionAndTypes() = default;
     std::unique_ptr<LuaFunctionBase> func;
-//     LuaType return_type;
     std::vector<LuaType> args_types;
 };
 
@@ -63,8 +51,6 @@ private:
         //The argument types this was called with
         std::vector<LuaType> args_types = {static_cast<LuaType>(lua_type(L, I+2))...};
         
-//         assert(get_lua_types(pack<Args...>{}) == args_types);
-        
         //Compare the argument types this was called with with the expected argument types
         if(get_lua_types<pack<Args...>>() != args_types) {
             std::cerr << "Error: type error in argument" << std::endl;
@@ -79,9 +65,7 @@ private:
     }
 public:
     template<typename F>
-    LuaFunction(F&& f) : f(std::forward<F>(f)) {
-        
-    }
+    LuaFunction(F&& f) : f(std::forward<F>(f)) {}
     
     void apply(lua_State* L) {
         apply_impl<pack<Args...>>(L, std::make_index_sequence<sizeof...(Args)>{});
