@@ -34,7 +34,15 @@ struct LuaValue {
     bool operator==(const LuaValue& rhs) const noexcept;
     
     std::string str() const;
+    
+    template<typename T>
+    T get();
 };
+
+template<typename T>
+T LuaValue::get() {
+    return any_cast<T>(value);
+}
 
 
 std::ostream& operator<<(std::ostream& o, const LuaValue& lv);

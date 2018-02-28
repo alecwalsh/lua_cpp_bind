@@ -20,23 +20,16 @@ struct LuaFunctionBase {
     virtual void apply(lua_State* L) = 0;
 };
 
-//Stores a LuaFunction and its argument types
-struct LuaFunctionAndTypes {
-    std::unique_ptr<LuaFunctionBase> func;
-    std::vector<LuaType> args_types;
-};
-
 template<typename F>
 struct LuaFunction;
 
 template<typename R, typename... Args>
 struct LuaFunction<R(Args...)> : LuaFunctionBase {
 private:
-    std::array<LuaValue, sizeof...(Args)> args_array;
-    
     std::function<R(Args...)> f;
+    std::vector<LuaType> args_types;
     
-    template<typename P, std::size_t... I>
+    template<std::size_t... I>
     void apply_impl(lua_State* L, std::index_sequence<I...>) {
         auto name = lua_tostring(L, lua_upvalueindex(1));
         
@@ -56,18 +49,16 @@ private:
             std::cerr << "Error: type error in argument" << std::endl;
             exit(EXIT_FAILURE);
         }
-
+        
         //Lua stack starts at 1, and we need to skip the first argument because __call has its table as the first argument
         //So we need to start at 2
-        args_array = {{LuaValue{L, ((int)I)+2}...}};
-
-        f(any_cast<pack_element_t<I, std::decay_t<P>>>(args_array[I].value)...);
+        f(LuaValue{L, I+2}.get<pack_element_t<I, pack<Args...>>>()...);
     }
 public:
     template<typename F>
-    LuaFunction(F&& f) : f(std::forward<F>(f)) {}
+    LuaFunction(F&& f) : f(std::forward<F>(f)), args_types(get_lua_types<pack<Args...>>()) {}
     
     void apply(lua_State* L) {
-        apply_impl<pack<Args...>>(L, std::make_index_sequence<sizeof...(Args)>{});
+        apply_impl(L, std::make_index_sequence<sizeof...(Args)>{});
     }
 };

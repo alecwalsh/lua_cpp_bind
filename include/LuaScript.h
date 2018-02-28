@@ -31,9 +31,6 @@ int set_cpp(lua_State* L);
 //Get a C++ value
 int get_cpp(lua_State* L);
 
-//Stores a LuaFunction, its return type, and its argument types
-struct LuaFunctionAndTypes;
-
 class LuaScript {
 protected:
 public:
@@ -58,7 +55,7 @@ public:
 private:
     void SetupBinding();
     std::unordered_map<std::string, std::pair<void*, Type>> propertyMap;
-    std::unordered_map<std::string, std::unique_ptr<LuaFunctionAndTypes>> methodMap;
+    std::unordered_map<std::string, std::unique_ptr<LuaFunctionBase>> methodMap;
 };
 
 template<typename T>
@@ -66,18 +63,10 @@ void LuaScript::Register(std::string name, T ptr, Type type) {
     propertyMap.insert({name, {ptr, type}});
 }
 
-
-template<typename R, typename... Args>
-std::unique_ptr<LuaFunctionAndTypes> createLuaFunctionAndTypes(std::function<R(Args...)> f) {
-    using args_type = typename function_type<decltype(f)>::args_type;
-    
-    return std::unique_ptr<LuaFunctionAndTypes>(new LuaFunctionAndTypes{std::make_unique<LuaFunction<R(Args...)>>(f), get_lua_types<args_type>()});
-}
-
 template<typename F>
 void LuaScript::Register(std::string name, F&& f) {
     LUA_STACK_CHECK_START
-    methodMap.insert({name, createLuaFunctionAndTypes(std::function<function_type_t<F>>(f))});
+    methodMap.insert({name, std::make_unique<LuaFunction<function_type_t<F>>>(f)});
     
     //Create a table
     lua_createtable(L, 0, 0);
