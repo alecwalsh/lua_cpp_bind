@@ -41,7 +41,7 @@ public:
     
     //Register a normal variable
     template<typename T>
-    void Register(std::string name, T ptr, Type type);
+    void Register(std::string name, T& val, Type type);
     
     //Register any Callable
     template<typename F>
@@ -59,8 +59,8 @@ private:
 };
 
 template<typename T>
-void LuaScript::Register(std::string name, T ptr, Type type) {
-    propertyMap.insert({name, {ptr, type}});
+void LuaScript::Register(std::string name, T& val, Type type) {
+    propertyMap.insert({name, {&val, type}});
 }
 
 template<typename F>
