@@ -5,5 +5,4 @@
 
 function call_cpp()
     test(21, false)
-    io.write(test.numargs, "\n")
 end

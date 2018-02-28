@@ -31,7 +31,6 @@ bool LuaValue::operator==(const LuaValue& rhs) const noexcept {
 //TODO: add more types
 LuaValue::LuaValue(lua_State* L, int idx) {
     type = lua_type(L, idx);
-    std::cout << "Type is " << lua_typename(L, type) << std::endl;
     switch(type) {
         case LUA_TNUMBER:
             value = lua_tonumber(L, idx);

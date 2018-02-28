@@ -94,10 +94,6 @@ void LuaScript::Register(std::string name, F&& f) {
 
     lua_setmetatable(L, table_idx);
     
-    lua_pushstring(L, "numargs");
-    lua_pushinteger(L, function_type<F>::numargs);
-    lua_settable(L, table_idx);
-    
     lua_setglobal(L, name.c_str());
     LUA_STACK_CHECK_END
 }
