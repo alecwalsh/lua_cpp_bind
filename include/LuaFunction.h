@@ -5,6 +5,7 @@
 #include <utility>
 #include <functional>
 #include <iostream>
+#include <exception>
 #include <unordered_map>
 #include <any>
 #include <memory>
@@ -14,6 +15,10 @@
 #include "LuaValue.h"
 
 #include "function_type_utils.h"
+
+struct LuaArgumentTypeError : public std::runtime_error {
+    using runtime_error::runtime_error;
+};
 
 struct LuaFunctionBase {
     virtual void apply(lua_State* L) = 0;
@@ -36,8 +41,9 @@ private:
         int expectedargs = sizeof...(Args);
         int numargs = lua_gettop(L) - 1;
         if(expectedargs != numargs) {
-            printf("Error: incorrect number of arguments:\n%s called with %d arguments, expected %d\n", name, numargs, expectedargs);
-            exit(EXIT_FAILURE);
+            char buf[64];
+            snprintf(buf, 64, "%s called with %d arguments, expected %d", name, numargs, expectedargs);
+            throw LuaArgumentTypeError{buf};
         }
         
         //The argument types this was called with
@@ -45,8 +51,9 @@ private:
         
         //Compare the argument types this was called with with the expected argument types
         if(get_lua_types<pack<Args...>>() != args_types) {
-            std::cerr << "Error: type error in argument" << std::endl;
-            exit(EXIT_FAILURE);
+            char buf[64];
+            snprintf(buf, 64, "Type error in call to Lua function %s", name);
+            throw LuaArgumentTypeError{buf};
         }
         
         //Lua stack starts at 1, and we need to skip the first argument because __call has its table as the first argument
