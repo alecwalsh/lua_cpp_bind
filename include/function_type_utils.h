@@ -7,7 +7,7 @@
 
 //Stores a parameter pack
 template<typename... Args>
-struct pack{pack() = delete;};
+struct pack{};
 
 //Gets the type of an element in a pack
 template<std::size_t, typename...>
@@ -31,11 +31,11 @@ struct pack_size;
 
 template<typename... Args>
 struct pack_size<pack<Args...>> {
-    static constexpr auto size = sizeof...(Args);
+    static constexpr size_t size = sizeof...(Args);
 };
 
 template<typename T>
-constexpr auto pack_size_v = pack_size<T>::size;;
+constexpr size_t pack_size_v = pack_size<T>::size;;
 
 
 //Removes the const from a member function pointer's type

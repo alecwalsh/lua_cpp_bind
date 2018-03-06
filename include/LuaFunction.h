@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <vector>
 #include <tuple>
 #include <utility>
 #include <functional>
@@ -27,7 +26,7 @@ template<typename R, typename... Args>
 struct LuaFunction<R(Args...)> : LuaFunctionBase {
 private:
     std::function<R(Args...)> f;
-    std::vector<LuaType> args_types;
+    std::array<LuaType, sizeof...(Args)> args_types;
     
     template<std::size_t... I>
     void apply_impl(lua_State* L, std::index_sequence<I...>) {
@@ -42,7 +41,7 @@ private:
         }
         
         //The argument types this was called with
-        std::vector<LuaType> args_types = {static_cast<LuaType>(lua_type(L, I+2))...};
+        std::array<LuaType, sizeof...(Args)> args_types = {static_cast<LuaType>(lua_type(L, I+2))...};
         
         //Compare the argument types this was called with with the expected argument types
         if(get_lua_types<pack<Args...>>() != args_types) {

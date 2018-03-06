@@ -116,7 +116,7 @@ int set_cpp(lua_State* L) {
     auto& propertyMap = *static_cast<std::unordered_map<std::string, std::pair<void*, LuaScript::Type>>*>(lua_touserdata(L, propertyMap_idx));
     
     if(!propertyMap.count(name)) {
-        printf("Error: Name has not been registered\n");
+        printf("Error: Name %s has not been registered\n", name.c_str());
         return 0;
     }
     //A std::pair containg a pointer to the value and the type of the value
@@ -157,7 +157,7 @@ int get_cpp(lua_State* L) {
     auto& propertyMap = *static_cast<std::unordered_map<std::string, std::pair<void*, LuaScript::Type>>*>(lua_touserdata(L, propertyMap_idx));
     
     if(!propertyMap.count(name)) {
-        printf("Error: Name has not been registered\n");
+        printf("Error: Name %s has not been registered\n", name.c_str());
         return 0;
     }
     //A std::pair containg a pointer to the value and the type of the value
