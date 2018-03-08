@@ -15,20 +15,22 @@
 
 #include "function_type_utils.h"
 
-struct LuaArgumentTypeError : public std::runtime_error {
+class LuaArgumentTypeError : public std::runtime_error {
     using runtime_error::runtime_error;
 };
 
-struct LuaFunctionBase {
+class LuaFunctionBase {
+public:
     virtual void apply(lua_State* L) = 0;
+    virtual ~LuaFunctionBase() {}
 };
 
 template<typename F>
-struct LuaFunction;
+class LuaFunction;
+
 
 template<typename R, typename... Args>
-struct LuaFunction<R(Args...)> : LuaFunctionBase {
-private:
+class LuaFunction<R(Args...)> : public LuaFunctionBase {
     std::function<R(Args...)> f;
     std::array<LuaType, sizeof...(Args)> args_types;
     
