@@ -1,19 +1,21 @@
 #pragma once
-#if __cplusplus >= 201703L
+#if __has_include(<any>)
 #include <any>
 using std::any;
 using std::any_cast;
-#else
-#include <boost/any.hpp>
-using boost::any_cast;
+#elif __has_include(<experimental/any>)
+#include <experimental/any>
+using std::experimental::any_cast;
 
-struct my_any : public boost::any {
+struct my_any : public std::experimental::any {
     using any::any;
     bool has_value() const noexcept {
         return !empty();
     }
 };
 using any = my_any;
+#else
+#error Requires std::any
 #endif
 
 #include <lua.hpp>

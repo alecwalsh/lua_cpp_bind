@@ -28,7 +28,6 @@ public:
 template<typename F>
 class LuaFunction;
 
-
 template<typename R, typename... Args>
 class LuaFunction<R(Args...)> : public LuaFunctionBase {
     std::function<R(Args...)> f;
