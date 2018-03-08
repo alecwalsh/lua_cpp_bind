@@ -99,7 +99,7 @@ int call_cpp(lua_State* L) {
     auto name = lua_tostring(L, lua_upvalueindex(1));
     int methodMap_idx = lua_upvalueindex(2);
         
-    auto& methodMap = *static_cast<std::unordered_map<std::string, std::unique_ptr<LuaFunctionBase>>*> (lua_touserdata(L, methodMap_idx));
+    auto& methodMap = *static_cast<std::unordered_map<std::string, std::shared_ptr<LuaFunctionBase>>*> (lua_touserdata(L, methodMap_idx));
     methodMap[name]->apply(L);
     
     LUA_STACK_CHECK_END

@@ -55,7 +55,7 @@ public:
 private:
     void SetupBinding();
     std::unordered_map<std::string, std::pair<void*, Type>> propertyMap;
-    std::unordered_map<std::string, std::unique_ptr<LuaFunctionBase>> methodMap;
+    std::unordered_map<std::string, std::shared_ptr<LuaFunctionBase>> methodMap;
 };
 
 template<typename T>
@@ -66,7 +66,7 @@ void LuaScript::Register(std::string name, T& val, Type type) {
 template<typename F>
 void LuaScript::Register(std::string name, F&& f) {
     LUA_STACK_CHECK_START
-    methodMap.insert({name, std::make_unique<LuaFunction<function_type_t<F>>>(f)});
+    methodMap.insert({name, std::make_shared<LuaFunction<function_type_t<F>>>(f)});
     
     //Create a table
     lua_createtable(L, 0, 0);
