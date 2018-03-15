@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)
+cmake_minimum_required(VERSION 3.8.0) # 3.8 for cxx_standard
 
 project(lua_cpp_bind)
 
