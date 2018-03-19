@@ -1,5 +1,5 @@
 #pragma once
-#if __has_include(<any>)
+#if __has_include(<any>) && __cplusplus >= 201703L
 #include <any>
 using std::any;
 using std::any_cast;
