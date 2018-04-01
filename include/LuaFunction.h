@@ -30,8 +30,8 @@ class LuaFunction;
 
 template<typename R, typename... Args>
 class LuaFunction<R(Args...)> : public LuaFunctionBase {
-    std::function<R(Args...)> f;
-    std::array<LuaType, sizeof...(Args)> args_types;
+    const std::function<R(Args...)> f;
+    const std::array<LuaType, sizeof...(Args)> args_types;
     
     template<std::size_t... I>
     void apply_impl(lua_State* L, std::index_sequence<I...>) {

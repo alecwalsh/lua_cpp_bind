@@ -5,10 +5,15 @@
 #include <string>
 #include <iostream>
 
+
+int fn(double i) {
+    std::cout << i << std::endl;
+}
+
 int main() {
     LuaScript ls{"../test.lua"};
-    
-//     auto table = LuaTable(ls, "gl_version");
+
+    auto table = LuaTable(ls, "gl_version");
     
 //     auto r = table["abc"];
 //     
@@ -16,6 +21,7 @@ int main() {
     
 //     ls.Register("test", []{std::cout << "Hello from Lua" << std::endl;});
     ls.Register("test", [](double i, bool j){std::cout << "Hello from Lua " << i << std::endl;});
+    ls.Register("test2", fn);
     
 //     lua_pushstring(ls.L, "upvalue");
 //     lua_pushstring(ls.L, "upvalue2");

@@ -23,38 +23,38 @@ constexpr auto type_to_lua_type_v = type_to_lua_type<T>::value;
 
 template<>
 struct type_to_lua_type<int> {
-    static constexpr auto value = LuaType::Float;
+    static constexpr LuaType value = LuaType::Float;
 };
 
 template<>
 struct type_to_lua_type<double> {
-    static constexpr auto value = LuaType::Float;
+    static constexpr LuaType value = LuaType::Float;
 };
 
 template<>
 struct type_to_lua_type<bool> {
-    static constexpr auto value = LuaType::Bool;
+    static constexpr LuaType value = LuaType::Bool;
 };
 
 template<>
 struct type_to_lua_type<std::string> {
-    static constexpr auto value = LuaType::String;
+    static constexpr LuaType value = LuaType::String;
 };
 
 template<>
 struct type_to_lua_type<void> {
-    static constexpr auto value = LuaType::Nil;
+    static constexpr LuaType value = LuaType::Nil;
 };
 
 namespace detail {
     template<typename P, std::size_t... I>
-    std::array<LuaType, pack_size_v<P>> get_lua_types_impl(std::index_sequence<I...>) {
+    const std::array<LuaType, pack_size_v<P>> get_lua_types_impl(std::index_sequence<I...>) {
         return {type_to_lua_type_v<pack_element_t<I, P>>...};
     }
 }
 
 //Takes a pack of arguments and returns of vector of their Lua types
 template<typename P>
-std::array<LuaType, pack_size_v<P>> get_lua_types() {
+const std::array<LuaType, pack_size_v<P>> get_lua_types() {
     return detail::get_lua_types_impl<P>(std::make_index_sequence<pack_size_v<P>>{});
 }
