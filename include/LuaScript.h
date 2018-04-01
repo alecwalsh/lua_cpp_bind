@@ -12,6 +12,7 @@
 #include "LuaValue.h"
 
 #include "function_type_utils.h"
+#include "function_wrapper.h"
 
 //Use these at the beginning and end of function to make sure you left Lua's stack the way you found it
 #ifdef DEBUG
@@ -66,7 +67,9 @@ void LuaScript::Register(std::string name, T& val, Type type) {
 template<typename F>
 void LuaScript::Register(std::string name, F&& f) {
     LUA_STACK_CHECK_START
-    methodMap.emplace(name, std::make_unique<LuaFunction<function_type_t<F>>>(std::forward<F>(f)));
+    auto wrapped_function = wrap_lua_function(std::forward<F>(f));
+//     methodMap.emplace(name, std::make_unique<LuaFunction<function_type_t<F>>>(std::forward<F>(f)));
+    methodMap.emplace(name, std::make_unique<LuaFunction<function_type_t<decltype(wrapped_function)>>>(wrapped_function));
     
     //Create a table
     lua_createtable(L, 0, 0);

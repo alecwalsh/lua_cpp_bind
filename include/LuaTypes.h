@@ -22,10 +22,10 @@ template<typename T>
 constexpr auto type_to_lua_type_v = type_to_lua_type<T>::value;
 
 //TODO: fix int arguments
-// template<>
-// struct type_to_lua_type<int> {
-//     static constexpr LuaType value = LuaType::Float;
-// };
+template<>
+struct type_to_lua_type<int> {
+    static constexpr LuaType value = LuaType::Float;
+};
 
 template<>
 struct type_to_lua_type<double> {

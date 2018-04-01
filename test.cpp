@@ -2,11 +2,13 @@
 #include "LuaValue.h"
 #include "LuaTable.h"
 
+#include "function_wrapper.h"
+
 #include <string>
 #include <iostream>
 
 
-double fn(double i) {
+int fn(int i) {
     std::cout << i << std::endl;
     return i;
 }
@@ -21,8 +23,11 @@ int main() {
     
     std::cout << r << std::endl;
     
+    auto l = [](int i){std::cout << "Hello from Lua " << i << std::endl;};
+    
     ls.Register("lambda_test", []{std::cout << "Hello from Lua" << std::endl;});
     ls.Register("lambda_test2", [](double i, bool j){std::cout << "Hello from Lua " << i << std::endl;});
+    ls.Register("lambda_test3", l);
     ls.Register("function_test", fn);
     
     
