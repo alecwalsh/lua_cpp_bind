@@ -10,7 +10,7 @@ template<typename... Args>
 struct pack{};
 
 //Gets the type of an element in a pack
-template<std::size_t, typename...>
+template<std::size_t, typename>
 struct pack_element;
 
 template<template<typename...> typename T, std::size_t I, typename Head, typename... Tail>
@@ -23,8 +23,8 @@ struct pack_element<0, T<Head, Tail...>> {
     using type = Head;
 };
 
-template<std::size_t I, typename... Ts>
-using pack_element_t = typename pack_element<I, Ts...>::type;
+template<std::size_t I, typename T>
+using pack_element_t = typename pack_element<I, T>::type;
 
 template<typename T>
 struct pack_size;
@@ -35,7 +35,7 @@ struct pack_size<T<Args...>> {
 };
 
 template<typename T>
-constexpr size_t pack_size_v = pack_size<T>::size;;
+constexpr size_t pack_size_v = pack_size<T>::size;
 
 
 //Removes the const from a member function pointer's type

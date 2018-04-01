@@ -5,7 +5,7 @@
 
 #include "function_type_utils.h"
 
-//The integer and number types are LUA_INTEGER and LUA_NUMBER from luaconf.h, make sure to use the right types(e.g. Don't use double instead of float)
+//The integer and number types are LUA_INTEGER and LUA_NUMBER from luaconf.h, make sure to use the right types(e.g. Don't use float instead of double)
 enum class LuaType {
     Nil = 0,
     Bool = 1,
@@ -21,10 +21,11 @@ struct type_to_lua_type;
 template<typename T>
 constexpr auto type_to_lua_type_v = type_to_lua_type<T>::value;
 
-template<>
-struct type_to_lua_type<int> {
-    static constexpr LuaType value = LuaType::Float;
-};
+//TODO: fix int arguments
+// template<>
+// struct type_to_lua_type<int> {
+//     static constexpr LuaType value = LuaType::Float;
+// };
 
 template<>
 struct type_to_lua_type<double> {

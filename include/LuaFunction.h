@@ -37,7 +37,7 @@ class LuaFunction<R(Args...)> : public LuaFunctionBase {
     void apply_impl(lua_State* L, std::index_sequence<I...>) {
         auto name = lua_tostring(L, lua_upvalueindex(1));
         
-        //__call always has its table as the first argument
+        //__call always has its table as the first argument, so subtract 1
         int expectedargs = sizeof...(Args);
         int numargs = lua_gettop(L) - 1;
         if(expectedargs != numargs) {
