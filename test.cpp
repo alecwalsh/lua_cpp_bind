@@ -6,27 +6,25 @@
 #include <iostream>
 
 
-int fn(double i) {
+double fn(double i) {
     std::cout << i << std::endl;
+    return i;
 }
 
+//TODO: add proper unit tests
 int main() {
     LuaScript ls{"../test.lua"};
 
     auto table = LuaTable(ls, "gl_version");
     
-//     auto r = table["abc"];
-//     
-//     std::cout << r << std::endl;
+    auto r = table["abc"];
     
-//     ls.Register("test", []{std::cout << "Hello from Lua" << std::endl;});
-    ls.Register("test", [](double i, bool j){std::cout << "Hello from Lua " << i << std::endl;});
-    ls.Register("test2", fn);
+    std::cout << r << std::endl;
     
-//     lua_pushstring(ls.L, "upvalue");
-//     lua_pushstring(ls.L, "upvalue2");
-//     lua_pushcfunction(ls.L, [](lua_State* L)->int{std::cout << "top: " << lua_gettop(L) << std::endl;return 0;});
-//     lua_setglobal(ls.L, "cpp1");
+    ls.Register("lambda_test", []{std::cout << "Hello from Lua" << std::endl;});
+    ls.Register("lambda_test2", [](double i, bool j){std::cout << "Hello from Lua " << i << std::endl;});
+    ls.Register("function_test", fn);
+    
     
     ls.exec("call_cpp()");
     
@@ -34,6 +32,6 @@ int main() {
 //         std::cout << t1 << " => " << t2 << std::endl;
 //     }
 
-//     ls.exec("io.write(\"a\")");
+    ls.exec("io.write(\"a\")");
     return 0;
 }

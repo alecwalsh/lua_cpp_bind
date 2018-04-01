@@ -26,6 +26,7 @@ if(MINGW)
 endif()
 
 add_executable(lua_cpp_bind_test ${SOURCES} "test.cpp")
+target_compile_options(lua_cpp_bind_test PRIVATE "-Wall")
 target_link_libraries(lua_cpp_bind_test lua_cpp_bind)
 
 #Debug flags

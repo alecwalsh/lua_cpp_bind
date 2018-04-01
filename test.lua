@@ -4,6 +4,7 @@ gl_version = {3, 3, false, abc = "def"}
 -- io = require('io')
 
 function call_cpp()
-    test(21, false)
-    test2(123)
+    lambda_test()
+    lambda_test2(21, false)
+    function_test(123)
 end
