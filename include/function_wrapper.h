@@ -10,6 +10,11 @@ namespace detail {
     struct corresponding_type {
         using type = T;
     };
+    
+    template<typename T>
+    struct corresponding_type<const T&> {
+        using type = T;
+    };
 
     template<>
     struct corresponding_type<int> {

@@ -93,7 +93,6 @@ void LuaScript::SetupBinding() {
     LUA_STACK_CHECK_END
 }
 
-//TODO: Pass lua arguments to cpp
 int call_cpp(lua_State* L) {
     LUA_STACK_CHECK_START
     auto name = lua_tostring(L, lua_upvalueindex(1));

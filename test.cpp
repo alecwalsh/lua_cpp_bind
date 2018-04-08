@@ -26,7 +26,7 @@ int main() {
     auto l = [](int i){std::cout << "Hello from Lua " << i << std::endl;};
     
     ls.Register("lambda_test", []{std::cout << "Hello from Lua" << std::endl;});
-    ls.Register("lambda_test2", [](double i, bool j){std::cout << "Hello from Lua " << i << std::endl;});
+    ls.Register("lambda_test2", [](const double& i, bool j){std::cout << "Hello from Lua " << i << std::endl;});
     ls.Register("lambda_test3", l);
     ls.Register("function_test", fn);
     
