@@ -19,6 +19,10 @@ class LuaArgumentTypeError : public std::runtime_error {
     using runtime_error::runtime_error;
 };
 
+class LuaArgumentCountError : public std::runtime_error {
+    using runtime_error::runtime_error;
+};
+
 class LuaFunctionBase {
 public:
     virtual void apply(lua_State* L) = 0;
@@ -43,7 +47,7 @@ class LuaFunction<R(Args...)> : public LuaFunctionBase {
         if(expectedargs != numargs) {
             char buf[64];
             snprintf(buf, 64, "%s called with %d arguments, expected %d", name, numargs, expectedargs);
-            throw LuaArgumentTypeError{buf};
+            throw LuaArgumentCountError{buf};
         }
         
         //The argument types this was called with
