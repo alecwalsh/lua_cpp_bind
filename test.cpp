@@ -31,6 +31,10 @@ int main() {
     ls.Register("function_test", fn);
     
     
+    auto s = "abcd";
+    ls.Register("var_test", s, LuaType::String);
+    
+    
     ls.exec("call_cpp()");
     
 //     for(const auto [t1, t2] : table) {

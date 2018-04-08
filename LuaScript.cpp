@@ -94,28 +94,24 @@ void LuaScript::SetupBinding() {
 }
 
 int call_cpp(lua_State* L) {
-    LUA_STACK_CHECK_START
-    auto name = lua_tostring(L, lua_upvalueindex(1));
+    const char* name = lua_tostring(L, lua_upvalueindex(1));
     int methodMap_idx = lua_upvalueindex(2);
         
     auto& methodMap = *static_cast<std::unordered_map<std::string, std::unique_ptr<LuaFunctionBase>>*> (lua_touserdata(L, methodMap_idx));
     methodMap[name]->apply(L);
     
-    LUA_STACK_CHECK_END
     return 0;
 }
 
 //TODO: add error handling
 int set_cpp(lua_State* L) {
-    LUA_STACK_CHECK_START
     int propertyMap_idx = lua_upvalueindex(1);
-    std::string name = lua_tostring(L, 1);
-    
+    const char* name = lua_tostring(L, 1);
     
     auto& propertyMap = *static_cast<std::unordered_map<std::string, std::pair<void*, LuaScript::Type>>*>(lua_touserdata(L, propertyMap_idx));
     
     if(!propertyMap.count(name)) {
-        printf("Error: Name %s has not been registered\n", name.c_str());
+        printf("Error: Name %s has not been registered\n", name);
         return 0;
     }
     //A std::pair containg a pointer to the value and the type of the value
@@ -143,22 +139,20 @@ int set_cpp(lua_State* L) {
             break;
     }
     
-    LUA_STACK_CHECK_END
     return 0;
 }
 
 int get_cpp(lua_State* L) {
-    LUA_STACK_CHECK_START
     int propertyMap_idx = lua_upvalueindex(1);
-    std::string name = lua_tostring(L, 1);
-    lua_pop(L, 1);
+    const char* name = lua_tostring(L, 1);
     
     auto& propertyMap = *static_cast<std::unordered_map<std::string, std::pair<void*, LuaScript::Type>>*>(lua_touserdata(L, propertyMap_idx));
     
     if(!propertyMap.count(name)) {
-        printf("Error: Name %s has not been registered\n", name.c_str());
+        printf("Error: Name %s has not been registered\n", name);
         return 0;
     }
+    
     //A std::pair containg a pointer to the value and the type of the value
     auto& propertyValueType = propertyMap[name];
     
@@ -182,6 +176,5 @@ int get_cpp(lua_State* L) {
             break;
     }
     
-    LUA_STACK_CHECK_END
     return 1;
 }

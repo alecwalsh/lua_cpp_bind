@@ -8,4 +8,5 @@ function call_cpp()
     lambda_test2(21, false)
 --     lambda_test3(21.5)
     function_test(123)
+    io.write(cpp.var_test)
 end
