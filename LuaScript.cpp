@@ -97,7 +97,7 @@ int call_cpp(lua_State* L) {
     const char* name = lua_tostring(L, lua_upvalueindex(1));
     int methodMap_idx = lua_upvalueindex(2);
         
-    auto& methodMap = *static_cast<std::unordered_map<std::string, std::unique_ptr<LuaFunctionBase>>*> (lua_touserdata(L, methodMap_idx));
+    auto& methodMap = *static_cast<decltype(LuaScript::methodMap)*> (lua_touserdata(L, methodMap_idx));
     methodMap[name]->apply(L);
     
     return 0;
@@ -108,7 +108,7 @@ int set_cpp(lua_State* L) {
     int propertyMap_idx = lua_upvalueindex(1);
     const char* name = lua_tostring(L, 1);
     
-    auto& propertyMap = *static_cast<std::unordered_map<std::string, std::pair<void*, LuaScript::Type>>*>(lua_touserdata(L, propertyMap_idx));
+    auto& propertyMap = *static_cast<decltype(LuaScript::propertyMap)*>(lua_touserdata(L, propertyMap_idx));
     
     if(!propertyMap.count(name)) {
         printf("Error: Name %s has not been registered\n", name);
@@ -146,7 +146,7 @@ int get_cpp(lua_State* L) {
     int propertyMap_idx = lua_upvalueindex(1);
     const char* name = lua_tostring(L, 1);
     
-    auto& propertyMap = *static_cast<std::unordered_map<std::string, std::pair<void*, LuaScript::Type>>*>(lua_touserdata(L, propertyMap_idx));
+    auto& propertyMap = *static_cast<decltype(LuaScript::propertyMap)*>(lua_touserdata(L, propertyMap_idx));
     
     if(!propertyMap.count(name)) {
         printf("Error: Name %s has not been registered\n", name);

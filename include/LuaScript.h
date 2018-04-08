@@ -57,6 +57,11 @@ private:
     void SetupBinding();
     std::unordered_map<std::string, std::pair<void*, Type>> propertyMap;
     std::unordered_map<std::string, std::unique_ptr<LuaFunctionBase>> methodMap;
+    
+    //So these functions can use decltype(propertyMap) instead of typing the whole type out
+    friend int call_cpp(lua_State* L);
+    friend int set_cpp(lua_State* L);
+    friend int get_cpp(lua_State* L);
 };
 
 template<typename T>
