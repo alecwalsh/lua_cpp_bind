@@ -5,8 +5,6 @@
 
 #include "function_type_utils.h"
 
-
-
 namespace detail {
     template<typename T>
     struct corresponding_type {

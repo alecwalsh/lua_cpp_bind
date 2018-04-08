@@ -68,7 +68,6 @@ template<typename F>
 void LuaScript::Register(std::string name, F&& f) {
     LUA_STACK_CHECK_START
     auto wrapped_function = wrap_lua_function(std::forward<F>(f));
-//     methodMap.emplace(name, std::make_unique<LuaFunction<function_type_t<F>>>(std::forward<F>(f)));
     methodMap.emplace(name, std::make_unique<LuaFunction<function_type_t<decltype(wrapped_function)>>>(wrapped_function));
     
     //Create a table

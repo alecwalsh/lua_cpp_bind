@@ -22,7 +22,7 @@ LuaScript::LuaScript() {
 }
 
 LuaScript::LuaScript(std::string fileName) : LuaScript() {
-    auto err = luaL_loadfile(L, fileName.c_str());
+    int err = luaL_loadfile(L, fileName.c_str());
     if(err != LUA_OK) {
         switch(err) {
             case LUA_ERRSYNTAX:
@@ -46,7 +46,7 @@ LuaScript::~LuaScript() {
 }
 
 void LuaScript::exec(std::string code) {
-    auto err = luaL_loadstring(L, code.c_str());
+    int err = luaL_loadstring(L, code.c_str());
     if(err != LUA_OK) {
         if(err == LUA_ERRSYNTAX) {
             std::cout << "Syntax error in Lua code: " << std::endl;
