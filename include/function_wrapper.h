@@ -46,8 +46,11 @@ namespace detail {
     
     template<typename F, typename... Args>
     auto wrap_lua_function_helper(F&& f, pack<Args...>) {
-        return [&](corresponding_type_t<Args>... args) {
-            std::apply(std::forward<F>(f), convert_types(pack<Args...>{}, args...));
+        //Directly capturing f causes a segfault when using gcc, use std::function as a workaround
+        //I think it's this bug: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=70515
+        std::function f2{f};
+        return [&, f2](corresponding_type_t<Args>... args) {
+            std::apply(f2, convert_types(pack<Args...>{}, args...));
         };
     }
 }
