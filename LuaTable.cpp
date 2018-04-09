@@ -2,6 +2,8 @@
 
 #include <string>
 
+namespace LuaCppBind {
+
 LuaValue LuaTable::operator[](int i) {
     return table[LuaValue{LUA_TNUMBER, static_cast<double>(i)}];
 }
@@ -64,4 +66,5 @@ table_t::iterator LuaTable::begin() noexcept {
 
 table_t::iterator LuaTable::end() noexcept {
     return table.end();
+}
 }

@@ -5,6 +5,9 @@
 #include <exception>
 #include <cstdio>
 
+
+namespace LuaCppBind {
+
 //TODO: add more types
 bool LuaValue::operator==(const LuaValue& rhs) const noexcept {
     if(type == rhs.type) {
@@ -82,7 +85,8 @@ std::string LuaValue::str() const {
     }
 }
 
-std::ostream& operator<<(std::ostream& o, const LuaValue& lv) {
+std::ostream& operator<<(std::ostream& o, const LuaCppBind::LuaValue& lv) {
     o << lv.str();
     return o;
+}
 }

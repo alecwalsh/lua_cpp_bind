@@ -5,6 +5,8 @@
 
 #include "function_type_utils.h"
 
+namespace LuaCppBind {
+
 //The integer and number types are LUA_INTEGER and LUA_NUMBER from luaconf.h, make sure to use the right types(e.g. Don't use float instead of double)
 enum class LuaType {
     Nil = 0,
@@ -57,4 +59,5 @@ namespace detail {
 template<typename P>
 const std::array<LuaType, pack_size_v<P>> get_lua_types() {
     return detail::get_lua_types_impl<P>(std::make_index_sequence<pack_size_v<P>>{});
+}
 }

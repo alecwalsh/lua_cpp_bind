@@ -23,6 +23,8 @@
 #define LUA_STACK_CHECK_END
 #endif
 
+namespace LuaCppBind {
+
 //Call a C++ method
 int call_cpp(lua_State* L);
 
@@ -31,7 +33,6 @@ int set_cpp(lua_State* L);
 
 //Get a C++ value
 int get_cpp(lua_State* L);
-
 class LuaScript {
 protected:
 public:
@@ -92,4 +93,5 @@ void LuaScript::Register(std::string name, F&& f) {
     
     lua_setglobal(L, name.c_str());
     LUA_STACK_CHECK_END
+}
 }

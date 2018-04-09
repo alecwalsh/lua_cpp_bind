@@ -24,6 +24,8 @@ using any = my_any;
 #include <unordered_map>
 #include <string>
 
+namespace LuaCppBind {
+
 struct LuaValue {
     int type;
     any value;
@@ -46,16 +48,16 @@ T LuaValue::get() {
     return any_cast<T>(value);
 }
 
-
-std::ostream& operator<<(std::ostream& o, const LuaValue& lv);
+std::ostream& operator<<(std::ostream& o, const LuaCppBind::LuaValue& lv);
+}
 
 namespace std {
-    template<> struct hash<LuaValue> {
-        using argument_type = LuaValue;
+    template<> struct hash<LuaCppBind::LuaValue> {
+        using argument_type = LuaCppBind::LuaValue;
         using result_type = std::size_t;
         
         //TODO: implement this
-        std::size_t operator()(const LuaValue& lv) const noexcept {
+        std::size_t operator()(const LuaCppBind::LuaValue& lv) const noexcept {
             switch(lv.type) {
                 case LUA_TNUMBER:
                     return std::hash<LUA_NUMBER>()(any_cast<LUA_NUMBER>(lv.value));

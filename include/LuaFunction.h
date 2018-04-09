@@ -15,6 +15,8 @@
 
 #include "function_type_utils.h"
 
+namespace LuaCppBind {
+
 class LuaArgumentTypeError : public std::runtime_error {
     using runtime_error::runtime_error;
 };
@@ -72,3 +74,4 @@ public:
         apply_impl(L, std::make_index_sequence<sizeof...(Args)>{});
     }
 };
+}

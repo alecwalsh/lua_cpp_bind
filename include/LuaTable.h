@@ -1,6 +1,9 @@
 #pragma once
 #include "LuaScript.h"
 #include "LuaValue.h"
+
+namespace LuaCppBind {
+
 using table_t = std::unordered_map<LuaValue, LuaValue>;
 
 struct LuaTable {
@@ -14,3 +17,4 @@ struct LuaTable {
 
 //TODO: add more types
 LuaValue get_lua_value(LuaScript& ls, int idx);
+}

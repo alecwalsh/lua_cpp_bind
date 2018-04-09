@@ -4,6 +4,8 @@
 #include "LuaScript.h"
 #include "LuaFunction.h"
 
+namespace LuaCppBind {
+
 LuaScript::LuaScript() {
     L = luaL_newstate();
     luaL_openlibs(L);
@@ -177,4 +179,5 @@ int get_cpp(lua_State* L) {
     }
     
     return 1;
+}
 }

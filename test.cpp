@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 
+using namespace LuaCppBind;
 
 int fn(int i) {
     std::cout << i << std::endl;
