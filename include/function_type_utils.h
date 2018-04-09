@@ -119,3 +119,17 @@ struct apply_pack<T, P<Args...>> {
 
 template<template<typename...> typename T, typename P>
 using apply_pack_t = typename apply_pack<T, P>::type;
+
+
+// namespace detail {
+//     template<typename T, typename Tuple, size_t... Is>
+//     void make_from_tuple_placement_helper(T* addr, Tuple&& tup, std::index_sequence<Is...>) {
+//         new(addr) T{std::get<Is>(tup)...};
+//     }
+// }
+// 
+// //Like std::make_from_tuple, but uses placement new
+// template<typename T, typename Tuple>
+// void make_from_tuple_placement(T* addr, Tuple&& tup) {
+//     detail::make_from_tuple_placement_helper<T>(addr, std::forward<Tuple>(tup), std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>{});
+// }

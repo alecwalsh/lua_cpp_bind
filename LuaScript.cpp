@@ -15,7 +15,7 @@ LuaScript::LuaScript() {
             //Prints the error message and returns the error object unchanged
             const char *msg = lua_tostring(L, -1);
             if(msg != NULL) {
-                printf("%s\n", msg);
+                printf("Lua error: %s\n", msg);
             }
             return 1;
         });

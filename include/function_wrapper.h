@@ -30,13 +30,9 @@ namespace detail {
     using corresponding_type_t = typename corresponding_type<T>::type;
 
     //TODO: warn when conversion cause loss of precision
-    template<typename LuaArg, typename Arg>
-    auto convert_type(LuaArg t) {
-        return static_cast<Arg>(t);
-    }
     template<typename... LuaArgs, typename... Args, size_t... Is>
     std::tuple<LuaArgs...> convert_types_helper(pack<Args...>, std::index_sequence<Is...>, LuaArgs... args) {
-        return {convert_type<pack_element_t<Is, pack<LuaArgs...>>, pack_element_t<Is, pack<Args...>>>(args)...};
+        return {static_cast<pack_element_t<Is, pack<Args...>>>(args)...};
     }
     
     template<typename... LuaArgs, typename... Args>

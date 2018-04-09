@@ -65,6 +65,7 @@ private:
     friend int get_cpp(lua_State* L);
 };
 
+//Do type checking, passing the wrong type can cause crashes
 template<typename T>
 void LuaScript::Register(std::string name, T& val, Type type) {
     propertyMap.insert({name, {&val, type}});

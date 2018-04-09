@@ -39,8 +39,8 @@ class LuaFunction<R(Args...)> : public LuaFunctionBase {
     const std::function<R(Args...)> f;
     const std::array<LuaType, sizeof...(Args)> args_types;
     
-    template<std::size_t... I>
-    void apply_impl(lua_State* L, std::index_sequence<I...>) {
+    template<std::size_t... Is>
+    void apply_impl(lua_State* L, std::index_sequence<Is...>) {
         auto name = lua_tostring(L, lua_upvalueindex(1));
         
         //__call always has its table as the first argument, so subtract 1
@@ -53,7 +53,7 @@ class LuaFunction<R(Args...)> : public LuaFunctionBase {
         }
         
         //The argument types this was called with
-        std::array<LuaType, sizeof...(Args)> args_types = {static_cast<LuaType>(lua_type(L, I+2))...};
+        std::array<LuaType, sizeof...(Args)> args_types = {static_cast<LuaType>(lua_type(L, Is+2))...};
         
         //Compare the argument types this was called with with the expected argument types
         if(get_lua_types<pack<Args...>>() != args_types) {
@@ -64,14 +64,14 @@ class LuaFunction<R(Args...)> : public LuaFunctionBase {
         
         //Lua stack starts at 1, and we need to skip the first argument because __call has its table as the first argument
         //So we need to start at 2
-        f(LuaValue{L, I+2}.get<pack_element_t<I, pack<Args...>>>()...);
+        f(LuaValue{L, Is+2}.get<pack_element_t<Is, pack<Args...>>>()...);
     }
 public:
     template<typename F>
     LuaFunction(F&& f) : f(std::forward<F>(f)), args_types(get_lua_types<pack<Args...>>()) {}
     
     void apply(lua_State* L) {
-        apply_impl(L, std::make_index_sequence<sizeof...(Args)>{});
+        apply_impl(L, std::index_sequence_for<Args...>{});
     }
 };
 }
