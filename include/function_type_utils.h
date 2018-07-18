@@ -43,15 +43,14 @@ constexpr size_t pack_size_v = pack_size<T>::size;
 template<typename T>
 struct remove_const_mptr;
 
-template<typename R, typename C, typename... Args>
-struct remove_const_mptr<R(C::*)(Args...) const> {
-    using type = R(C::*)(Args...);
-};
 
 template<typename R, typename C, typename... Args>
 struct remove_const_mptr<R(C::*)(Args...)> {
     using type = R(C::*)(Args...);
 };
+
+template<typename R, typename C, typename... Args>
+struct remove_const_mptr<R(C::*)(Args...) const> : remove_const_mptr<R(C::*)(Args...)> {};
 
 template <typename T>
 using remove_const_mptr_t = typename remove_const_mptr<T>::type;
@@ -121,15 +120,14 @@ template<template<typename...> typename T, typename P>
 using apply_pack_t = typename apply_pack<T, P>::type;
 
 
-// namespace detail {
-//     template<typename T, typename Tuple, size_t... Is>
-//     void make_from_tuple_placement_helper(T* addr, Tuple&& tup, std::index_sequence<Is...>) {
-//         new(addr) T{std::get<Is>(tup)...};
-//     }
-// }
-// 
-// //Like std::make_from_tuple, but uses placement new
-// template<typename T, typename Tuple>
-// void make_from_tuple_placement(T* addr, Tuple&& tup) {
-//     detail::make_from_tuple_placement_helper<T>(addr, std::forward<Tuple>(tup), std::make_index_sequence<std::tuple_size_v<std::remove_reference_t<Tuple>>>{});
-// }
+//Convert a pointer to member type R(C::*)(Args...) to a function type R(C&, Args...)
+template<typename>
+struct method_type;
+
+template<typename R, typename C, typename... Args>
+struct method_type<R(C::*)(Args...)> {
+    using type = R(C&, Args...);
+};
+
+template<typename T>
+using method_type_t = typename method_type<T>::type;

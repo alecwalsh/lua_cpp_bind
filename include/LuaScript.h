@@ -25,54 +25,48 @@
 
 namespace LuaCppBind {
 
-//Call a C++ method
-int call_cpp(lua_State* L);
-
-//Set a C++ value
-int set_cpp(lua_State* L);
-
-//Get a C++ value
-int get_cpp(lua_State* L);
 class LuaScript {
 protected:
 public:
+    //Call a C++ method
+    static int call_cpp(lua_State* L);
+    //Set a C++ value
+    static int set_cpp(lua_State* L);
+    //Get a C++ value
+    static int get_cpp(lua_State* L);
+    
     using Type = LuaType;
     lua_State* L;
     //Pointer to a member function
-    template<typename R, typename T> using mptr_t = R(T::*);
     
     //Register a normal variable
     template<typename T>
-    void Register(std::string name, T& val, Type type);
+    void Register(const std::string& name, T& val, Type type);
     
     //Register any Callable
     template<typename F>
-    void Register(std::string name, F&& f);
+    void Register(const std::string& name, F&& f);
     
     void exec(std::string code);
     
     LuaScript();
-    LuaScript(std::string fileName);
+    LuaScript(const std::string& fileName);
     virtual ~LuaScript();
 private:
+    template<typename R, typename T> using mptr_t = R(T::*);
     void SetupBinding();
     std::unordered_map<std::string, std::pair<void*, Type>> propertyMap;
     std::unordered_map<std::string, std::unique_ptr<LuaFunctionBase>> methodMap;
-    
-    //So these functions can use decltype(propertyMap) instead of typing the whole type out
-    friend int call_cpp(lua_State* L);
-    friend int set_cpp(lua_State* L);
-    friend int get_cpp(lua_State* L);
 };
 
 //Do type checking, passing the wrong type can cause crashes
 template<typename T>
-void LuaScript::Register(std::string name, T& val, Type type) {
+void LuaScript::Register(const std::string& name, T& val, Type type) {
     propertyMap.insert({name, {&val, type}});
 }
 
 template<typename F>
-void LuaScript::Register(std::string name, F&& f) {
+void LuaScript::Register(const std::string& name, F&& f) {
     LUA_STACK_CHECK_START
     auto wrapped_function = wrap_lua_function(std::forward<F>(f));
     methodMap.emplace(name, std::make_unique<LuaFunction<function_type_t<decltype(wrapped_function)>>>(wrapped_function));
@@ -85,9 +79,11 @@ void LuaScript::Register(std::string name, F&& f) {
     lua_createtable(L, 0, 0);
     auto metatable_idx = lua_gettop(L);
     lua_pushstring(L, "__call");
+    
     lua_pushstring(L, name.c_str());
     lua_pushlightuserdata(L, &methodMap);
     lua_pushcclosure(L, call_cpp, 2);
+    
     lua_settable(L, metatable_idx);
 
     lua_setmetatable(L, table_idx);

@@ -12,40 +12,36 @@
 
 #include "LuaTypes.h"
 #include "LuaValue.h"
+#include "LuaFunction.h"
 
 #include "function_type_utils.h"
 
 namespace LuaCppBind {
 
-class LuaArgumentTypeError : public std::runtime_error {
-    using runtime_error::runtime_error;
-};
-
-class LuaArgumentCountError : public std::runtime_error {
-    using runtime_error::runtime_error;
-};
-
-class LuaFunctionBase {
+class LuaMethodBase {
 public:
     virtual void apply(lua_State* L) = 0;
-    virtual ~LuaFunctionBase() {}
+    virtual ~LuaMethodBase() {}
 };
 
+//TODO: this should share most of the logic with LuaFunction
 template<typename F>
-class LuaFunction;
+class LuaMethod;
 
-template<typename R, typename... Args>
-class LuaFunction<R(Args...)> : public LuaFunctionBase {
-    const std::function<R(Args...)> f;
+template<typename T, typename R, typename... Args>
+class LuaMethod<R(T&, Args...)> : public LuaMethodBase {
+    const std::function<R(T&, Args...)> f;
     const std::array<LuaType, sizeof...(Args)> args_types;
     
     template<std::size_t... Is>
     void apply_impl(lua_State* L, std::index_sequence<Is...>) {
         auto name = lua_tostring(L, lua_upvalueindex(1));
         
+        T& object = *static_cast<T*>(lua_touserdata(L, lua_upvalueindex(3)));
+        
         int expectedargs = sizeof...(Args);
-        //__call always has its table as the first argument, so subtract 1
-        int numargs = lua_gettop(L) - 1;
+        //__call always has its table as the first argument, so subtract 1, and methods have self as the first arg, so subtract another 1
+        int numargs = lua_gettop(L) - 2;
         if(expectedargs != numargs) {
             char buf[64];
             snprintf(buf, 64, "%s called with %d arguments, expected %d", name, numargs, expectedargs);
@@ -64,11 +60,11 @@ class LuaFunction<R(Args...)> : public LuaFunctionBase {
         
         //Lua stack starts at 1, and we need to skip the first argument because __call has its table as the first argument
         //So we need to start at 2
-        f(LuaValue{L, Is+2}.get<pack_element_t<Is, pack<Args...>>>()...);
+        f(object, LuaValue{L, Is+2}.get<pack_element_t<Is, pack<Args...>>>()...);
     }
 public:
     template<typename F>
-    LuaFunction(F&& f) : f(std::forward<F>(f)), args_types(get_lua_types<pack<Args...>>()) {}
+    LuaMethod(F&& f) : f(std::forward<F>(f)), args_types(get_lua_types<pack<Args...>>()) {}
     
     void apply(lua_State* L) {
         apply_impl(L, std::index_sequence_for<Args...>{});

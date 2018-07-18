@@ -23,7 +23,7 @@ LuaScript::LuaScript() {
     SetupBinding();
 }
 
-LuaScript::LuaScript(std::string fileName) : LuaScript() {
+LuaScript::LuaScript(const std::string& fileName) : LuaScript() {
     int err = luaL_loadfile(L, fileName.c_str());
     if(err != LUA_OK) {
         switch(err) {
@@ -95,18 +95,18 @@ void LuaScript::SetupBinding() {
     LUA_STACK_CHECK_END
 }
 
-int call_cpp(lua_State* L) {
+int LuaScript::call_cpp(lua_State* L) {
     const char* name = lua_tostring(L, lua_upvalueindex(1));
     int methodMap_idx = lua_upvalueindex(2);
         
-    auto& methodMap = *static_cast<decltype(LuaScript::methodMap)*> (lua_touserdata(L, methodMap_idx));
+    auto& methodMap = *static_cast<decltype(LuaScript::methodMap)*>(lua_touserdata(L, methodMap_idx));
     methodMap[name]->apply(L);
     
     return 0;
 }
 
 //TODO: add error handling
-int set_cpp(lua_State* L) {
+int LuaScript::set_cpp(lua_State* L) {
     int propertyMap_idx = lua_upvalueindex(1);
     const char* name = lua_tostring(L, 1);
     
@@ -135,6 +135,8 @@ int set_cpp(lua_State* L) {
             *((bool*)propertyValueType.first) = lua_toboolean(L, 2);
             break;
         case Type::Table:
+            printf("Not implemented yet\n");
+            exit(EXIT_FAILURE);
             break;
         default:
             printf("Error: Invalid Lua type\n");
@@ -144,7 +146,7 @@ int set_cpp(lua_State* L) {
     return 0;
 }
 
-int get_cpp(lua_State* L) {
+int LuaScript::get_cpp(lua_State* L) {
     int propertyMap_idx = lua_upvalueindex(1);
     const char* name = lua_tostring(L, 1);
     
@@ -172,6 +174,10 @@ int get_cpp(lua_State* L) {
             break;
         case Type::Bool:
             lua_pushboolean(L, *((bool*)propertyValueType.first));
+            break;
+        case Type::Table:
+            printf("Not implemented yet\n");
+            exit(EXIT_FAILURE);
             break;
         default:
             printf("Error: Invalid Lua type\n");
