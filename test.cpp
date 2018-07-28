@@ -12,13 +12,10 @@
 
 using namespace LuaCppBind;
 
-
-
 int fn(int i) {
     std::cout << i << std::endl;
     return i;
 }
-
 
 
 //TODO: add proper unit tests
@@ -48,6 +45,7 @@ int main() {
     .Finalize();
     
     ls.exec("call_cpp()");
+    
 //     for(const auto [t1, t2] : table) {
 //         std::cout << t1 << " => " << t2 << std::endl;
 //     }

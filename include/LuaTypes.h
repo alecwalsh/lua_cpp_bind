@@ -21,7 +21,7 @@ template<typename>
 struct type_to_lua_type;
 
 template<typename T>
-constexpr auto type_to_lua_type_v = type_to_lua_type<T>::value;
+constexpr LuaType type_to_lua_type_v = type_to_lua_type<T>::value;
 
 template<>
 struct type_to_lua_type<int> {
@@ -60,4 +60,27 @@ template<typename P>
 const std::array<LuaType, pack_size_v<P>> get_lua_types() {
     return detail::get_lua_types_impl<P>(std::make_index_sequence<pack_size_v<P>>{});
 }
+
+template<typename T>
+struct corresponding_type {
+    using type = T;
+};
+
+template<typename T>
+struct corresponding_type<const T&> {
+    using type = T;
+};
+
+template<>
+struct corresponding_type<int> {
+    using type = double;
+};
+
+template<>
+struct corresponding_type<float> {
+    using type = double;
+};
+
+template<typename T>
+using corresponding_type_t = typename corresponding_type<T>::type;
 }

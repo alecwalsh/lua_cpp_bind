@@ -126,7 +126,7 @@ int LuaScript::set_cpp(lua_State* L) {
 //             *((int*)propertyValueType.first) = lua_tointeger(L, 2);
 //             break;
         case Type::Float:
-            *((float*)propertyValueType.first) = lua_tonumber(L, 2);
+            *((double*)propertyValueType.first) = lua_tonumber(L, 2);
             break;
         case Type::String:
             *((const char**)propertyValueType.first) = lua_tostring(L, 2);
@@ -167,7 +167,7 @@ int LuaScript::get_cpp(lua_State* L) {
 //             lua_pushinteger(L, *((int*)propertyValueType.first));
 //             break;
         case Type::Float:
-            lua_pushnumber(L, *((float*)propertyValueType.first));
+            lua_pushnumber(L, *((double*)propertyValueType.first));
             break;
         case Type::String:
             lua_pushstring(L, *((const char**)propertyValueType.first));

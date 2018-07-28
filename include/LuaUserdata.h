@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "LuaScript.h"
+#include "LuaTypes.h"
 #include "LuaMethod.h"
 
 #include "function_type_utils.h"
@@ -28,7 +29,7 @@ struct constructor : public constructor_base<T> {
             //Cast the arguments from the types returned from Lua to the types accepted by the constructor
             static_cast<pack_element_t<Is, pack<Args...>>>(
                 //Get the arguments from Lua
-                LuaValue{L, Is+1}.get<::detail::corresponding_type_t<pack_element_t<Is, pack<Args...>>>>()
+                LuaValue{L, Is+1}.get<corresponding_type_t<pack_element_t<Is, pack<Args...>>>>()
             )...
         };
     }

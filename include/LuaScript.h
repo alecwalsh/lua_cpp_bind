@@ -26,15 +26,13 @@
 namespace LuaCppBind {
 
 class LuaScript {
-protected:
-public:
     //Call a C++ method
     static int call_cpp(lua_State* L);
     //Set a C++ value
     static int set_cpp(lua_State* L);
     //Get a C++ value
     static int get_cpp(lua_State* L);
-    
+public:
     using Type = LuaType;
     lua_State* L;
     //Pointer to a member function
@@ -44,6 +42,7 @@ public:
     void Register(const std::string& name, T& val, Type type);
     
     //Register any Callable
+    //TODO: Support returning values to lua
     template<typename F>
     void Register(const std::string& name, F&& f);
     
@@ -60,6 +59,7 @@ private:
 };
 
 //Do type checking, passing the wrong type can cause crashes
+//TODO: automatically detect type
 template<typename T>
 void LuaScript::Register(const std::string& name, T& val, Type type) {
     propertyMap.insert({name, {&val, type}});
