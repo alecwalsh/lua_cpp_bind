@@ -13,15 +13,15 @@ namespace detail {
         return {static_cast<pack_element_t<Is, pack<Args...>>>(args)...};
     }
     
-    template<typename... LuaArgs, typename... Args>
-    std::tuple<LuaArgs...> convert_types(pack<Args...>, LuaArgs... args) {
+    template<typename... Args, typename... LuaArgs>
+    std::tuple<LuaArgs...> convert_types(LuaArgs... args) {
         return convert_types_helper(pack<Args...>{}, std::make_index_sequence<sizeof...(Args)>{}, args...);
     }
     
     template<typename F, typename... Args>
     auto wrap_lua_function_helper(F&& f, pack<Args...>) {
         return [&](corresponding_type_t<Args>... args) {
-            std::apply(std::forward<F>(f), convert_types(pack<Args...>{}, args...));
+            std::apply(std::forward<F>(f), convert_types<Args...>(args...));
         };
     }
 }
