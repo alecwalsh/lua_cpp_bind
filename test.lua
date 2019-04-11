@@ -1,4 +1,4 @@
-gl_version = {abc = "def", [0] = 0, [1] = 1.5}
+table_test1 = {abc = "def", [0] = 0, [1] = 1.5}
 
 -- io = require('io')
 
