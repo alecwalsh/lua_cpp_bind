@@ -7,6 +7,8 @@
 
 namespace LuaCppBind {
 
+//TODO: Move exception types to different file
+//TODO: Add custom messages
 class LuaError : public std::runtime_error {
     using runtime_error::runtime_error;
 };
@@ -16,6 +18,10 @@ class LuaArgumentTypeError : public LuaError {
 };
 
 class LuaArgumentCountError : public LuaError {
+    using LuaError::LuaError;
+};
+
+class LuaInvalidTypeError : public LuaError {
     using LuaError::LuaError;
 };
 

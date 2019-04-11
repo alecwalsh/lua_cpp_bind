@@ -30,8 +30,8 @@ struct LuaValue {
     int type;
     any value;
     
-    LuaValue(int type, any value) : type(type), value(value) {}
-    LuaValue() : type(LUA_TNONE), value(nullptr) {}
+    LuaValue(int type, any value) : type{type}, value{value} {}
+    LuaValue() : type{LUA_TNONE}, value{} {}
     LuaValue(lua_State* L, int idx);
     
     //TODO: add more types

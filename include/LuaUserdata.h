@@ -25,11 +25,11 @@ template<typename T, typename... Args>
 struct constructor : public constructor_base<T> {
     template<std::size_t... Is>
     void construct_impl(lua_State* L, T* t, std::index_sequence<Is...>) {
-        new(t) T{
+        new(t) T {
             //Cast the arguments from the types returned from Lua to the types accepted by the constructor
-            static_cast<pack_wrapper_element_t<Is, pack<Args...>>>(
+            static_cast<pack_element_t<Is, Args...>>(
                 //Get the arguments from Lua
-                LuaValue{L, Is+1}.get<corresponding_type_t<pack_wrapper_element_t<Is, pack<Args...>>>>()
+                LuaValue{L, Is+1}.get<corresponding_type_t<pack_element_t<Is, Args...>>>()
             )...
         };
     }
@@ -163,7 +163,6 @@ struct LuaObject {
     
     //TODO: Deallocate in __gc
     std::unordered_map<std::string, std::unique_ptr<LuaMethodBase>>* methodMap;
-private:
 };
 
 }

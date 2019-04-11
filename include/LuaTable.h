@@ -12,7 +12,7 @@ struct LuaTable {
     table_t::iterator begin() noexcept;
     table_t::iterator end() noexcept;
     LuaValue operator[](int i);
-    LuaValue operator[](std::string s);
+    LuaValue operator[](const std::string& s);
 };
 
 //TODO: add more types

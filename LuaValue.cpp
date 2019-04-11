@@ -54,10 +54,10 @@ LuaValue::LuaValue(lua_State* L, int idx) {
             break;
         case LUA_TNONE:
             printf("Invalid index\n");
-            exit(1);
+            exit(EXIT_FAILURE);
         default:
             printf("Lua value has invalid type\n");
-            exit(1);
+            exit(EXIT_FAILURE);
     }
 }
 
