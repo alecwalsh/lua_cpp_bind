@@ -27,7 +27,11 @@ endif()
 
 add_executable(lua_cpp_bind_test ${SOURCES} "test.cpp")
 target_compile_options(lua_cpp_bind_test PRIVATE "-Wall")
-target_link_libraries(lua_cpp_bind_test lua_cpp_bind)
+target_link_libraries(lua_cpp_bind_test lua_cpp_bind gtest)
+
+enable_testing()
+find_package(GTest)
+gtest_discover_tests(lua_cpp_bind_test)
 
 #Debug flags
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")

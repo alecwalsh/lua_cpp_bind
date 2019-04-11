@@ -1,6 +1,5 @@
-gl_version = {3, 3, false, abc = "def"}
--- 
--- table2 = {[1]=1, [2]=3, [gl_version] = 4}
+gl_version = {abc = "def", [0] = 0, [1] = 1.5}
+
 -- io = require('io')
 
 
