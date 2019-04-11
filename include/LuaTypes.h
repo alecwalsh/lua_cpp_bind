@@ -1,6 +1,6 @@
 #pragma once
 #include <utility>
-#include <vector>
+#include <array>
 #include <string>
 
 #include "function_type_utils.h"
@@ -67,7 +67,7 @@ namespace detail {
     }
 }
 
-//Takes a pack of arguments and returns of vector of their Lua types
+//Takes a pack of arguments and returns an array of their Lua types
 template<typename... Args>
 const std::array<LuaType, sizeof...(Args)> get_lua_types() {
     return detail::get_lua_types_impl<pack<Args...>>(std::make_index_sequence<sizeof...(Args)>{});
