@@ -7,6 +7,18 @@
 
 namespace LuaCppBind {
 
+class LuaError : public std::runtime_error {
+    using runtime_error::runtime_error;
+};
+
+class LuaArgumentTypeError : public LuaError {
+    using LuaError::LuaError;
+};
+
+class LuaArgumentCountError : public LuaError {
+    using LuaError::LuaError;
+};
+
 //The integer and number types are LUA_INTEGER and LUA_NUMBER from luaconf.h, make sure to use the right types(e.g. Don't use float instead of double)
 enum class LuaType {
     Nil = 0,

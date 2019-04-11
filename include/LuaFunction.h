@@ -4,6 +4,7 @@
 #include <tuple>
 #include <utility>
 #include <functional>
+#include <string>
 #include <iostream>
 #include <exception>
 #include <unordered_map>
@@ -16,14 +17,6 @@
 #include "function_type_utils.h"
 
 namespace LuaCppBind {
-
-class LuaArgumentTypeError : public std::runtime_error {
-    using runtime_error::runtime_error;
-};
-
-class LuaArgumentCountError : public std::runtime_error {
-    using runtime_error::runtime_error;
-};
 
 class LuaFunctionBase {
 public:
@@ -46,10 +39,15 @@ class LuaFunction<R(Args...)> : public LuaFunctionBase {
         int expectedargs = sizeof...(Args);
         //__call always has its table as the first argument, so subtract 1
         int numargs = lua_gettop(L) - 1;
+        
         if(expectedargs != numargs) {
-            char buf[64];
-            snprintf(buf, 64, "%s called with %d arguments, expected %d", name, numargs, expectedargs);
-            throw LuaArgumentCountError{buf};
+            std::string s = name;
+            s += " called with ";
+            s += std::to_string(numargs);
+            s += " arguments, expected ";
+            s += std::to_string(expectedargs);
+            
+            throw LuaArgumentCountError{s};
         }
         
         //The argument types this was called with
@@ -57,9 +55,10 @@ class LuaFunction<R(Args...)> : public LuaFunctionBase {
         
         //Compare the argument types this was called with with the expected argument types
         if(get_lua_types<Args...>() != args_types) {
-            char buf[64];
-            snprintf(buf, 64, "Type error in call to Lua function %s", name);
-            throw LuaArgumentTypeError{buf};
+            std::string s = "Type error in call to Lua function ";
+            s += name;
+            
+            throw LuaArgumentTypeError{s};
         }
         
         //Lua stack starts at 1, and we need to skip the first argument because __call has its table as the first argument
