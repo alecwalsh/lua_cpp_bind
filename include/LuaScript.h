@@ -46,7 +46,7 @@ public:
     template<typename F>
     void Register(const std::string& name, F&& f);
     
-    void exec(std::string code);
+    void exec(const std::string& code);
     
     LuaScript();
     LuaScript(const std::string& fileName);

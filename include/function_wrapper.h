@@ -10,7 +10,7 @@ namespace detail {
     //TODO: warn when conversion cause loss of precision
     template<typename... LuaArgs, typename... Args, size_t... Is>
     std::tuple<LuaArgs...> convert_types_helper(pack<Args...>, std::index_sequence<Is...>, LuaArgs... args) {
-        return {static_cast<pack_element_t<Is, pack<Args...>>>(args)...};
+        return {static_cast<pack_element_t<Is, Args...>>(args)...};
     }
     
     template<typename... Args, typename... LuaArgs>

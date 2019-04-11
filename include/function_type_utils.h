@@ -6,36 +6,49 @@
 
 
 //Stores a parameter pack
-template<typename... Args>
+template<typename...>
 struct pack{};
 
 //Gets the type of an element in a pack
-template<std::size_t, typename>
+template<std::size_t, typename...>
 struct pack_element;
 
-template<template<typename...> typename T, std::size_t I, typename Head, typename... Tail>
-struct pack_element<I, T<Head, Tail...>> {
-    using type = typename pack_element<I-1, T<Tail...>>::type;
+template<std::size_t I, typename Head, typename... Tail>
+struct pack_element<I, Head, Tail...> {
+    using type = typename pack_element<I-1, Tail...>::type;
 };
 
-template<template<typename...> typename T, typename Head, typename... Tail>
-struct pack_element<0, T<Head, Tail...>> {
+template<typename Head, typename... Tail>
+struct pack_element<0, Head, Tail...> {
     using type = Head;
 };
 
+template<std::size_t I, typename... Ts>
+using pack_element_t = typename pack_element<I, Ts...>::type;
+
+//Like pack_element, but takes a pack<Args...> instead of Args...
+//Works with an class with template type arguments, not just pack<>
+template<std::size_t, typename>
+struct pack_wrapper_element;
+
+template<template<typename...> typename T, std::size_t I, typename... Args>
+struct pack_wrapper_element<I, T<Args...>> {
+    using type = pack_element_t<I, Args...>;
+};
+
 template<std::size_t I, typename T>
-using pack_element_t = typename pack_element<I, T>::type;
+using pack_wrapper_element_t = typename pack_wrapper_element<I, T>::type;
 
 template<typename T>
 struct pack_size;
 
 template<template<typename...> typename T, typename... Args>
 struct pack_size<T<Args...>> {
-    static constexpr size_t size = sizeof...(Args);
+    static constexpr std::size_t size = sizeof...(Args);
 };
 
 template<typename T>
-constexpr size_t pack_size_v = pack_size<T>::size;
+constexpr std::size_t pack_size_v = pack_size<T>::size;
 
 
 //Removes the const from a member function pointer's type
@@ -61,7 +74,7 @@ struct function_type {
 private:
     using type_without_const_ref = remove_const_mptr_t<decltype(&std::remove_reference_t<F>::operator())>;
 public:
-    static constexpr size_t numargs = function_type<type_without_const_ref>::numargs;
+    static constexpr std::size_t numargs = function_type<type_without_const_ref>::numargs;
     //R(Args...)
     using type = typename function_type<type_without_const_ref>::type;
     //Return type and types of the arguments
@@ -71,7 +84,7 @@ public:
 
 template<typename R, typename C, typename... Args>
 struct function_type<R(C::*)(Args...)> {
-    static constexpr size_t numargs = sizeof...(Args);
+    static constexpr std::size_t numargs = sizeof...(Args);
     using type = R(Args...);
     using return_type = R;
     using args_type = pack<Args...>;
@@ -102,7 +115,7 @@ template<typename F>
 using function_return_type_t = typename function_type<F>::return_type;
 
 template<typename F>
-static constexpr size_t function_numargs_v = function_type<F>::numargs;
+static constexpr std::size_t function_numargs_v = function_type<F>::numargs;
 
 //Create a template using another template's arguments
 //Example:

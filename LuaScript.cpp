@@ -47,7 +47,7 @@ LuaScript::~LuaScript() {
     lua_close(L);
 }
 
-void LuaScript::exec(std::string code) {
+void LuaScript::exec(const std::string& code) {
     int err = luaL_loadstring(L, code.c_str());
     if(err != LUA_OK) {
         if(err == LUA_ERRSYNTAX) {

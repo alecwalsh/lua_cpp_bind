@@ -56,7 +56,7 @@ class LuaFunction<R(Args...)> : public LuaFunctionBase {
         std::array<LuaType, sizeof...(Args)> args_types = {static_cast<LuaType>(lua_type(L, Is+2))...};
         
         //Compare the argument types this was called with with the expected argument types
-        if(get_lua_types<pack<Args...>>() != args_types) {
+        if(get_lua_types<Args...>() != args_types) {
             char buf[64];
             snprintf(buf, 64, "Type error in call to Lua function %s", name);
             throw LuaArgumentTypeError{buf};
@@ -64,11 +64,11 @@ class LuaFunction<R(Args...)> : public LuaFunctionBase {
         
         //Lua stack starts at 1, and we need to skip the first argument because __call has its table as the first argument
         //So we need to start at 2
-        f(LuaValue{L, Is+2}.get<pack_element_t<Is, pack<Args...>>>()...);
+        f(LuaValue{L, Is+2}.get<pack_element_t<Is, Args...>>()...);
     }
 public:
     template<typename F>
-    LuaFunction(F&& f) : f(std::forward<F>(f)), args_types(get_lua_types<pack<Args...>>()) {}
+    LuaFunction(F&& f) : f(std::forward<F>(f)), args_types(get_lua_types<Args...>()) {}
     
     void apply(lua_State* L) {
         apply_impl(L, std::index_sequence_for<Args...>{});

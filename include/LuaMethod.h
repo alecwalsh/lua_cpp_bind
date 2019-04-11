@@ -52,7 +52,7 @@ class LuaMethod<R(T&, Args...)> : public LuaMethodBase {
         std::array<LuaType, sizeof...(Args)> args_types = {static_cast<LuaType>(lua_type(L, Is+2))...};
         
         //Compare the argument types this was called with with the expected argument types
-        if(get_lua_types<pack<Args...>>() != args_types) {
+        if(get_lua_types<Args...>() != args_types) {
             char buf[64];
             snprintf(buf, 64, "Type error in call to Lua function %s", name);
             throw LuaArgumentTypeError{buf};
@@ -64,7 +64,7 @@ class LuaMethod<R(T&, Args...)> : public LuaMethodBase {
     }
 public:
     template<typename F>
-    LuaMethod(F&& f) : f(std::forward<F>(f)), args_types(get_lua_types<pack<Args...>>()) {}
+    LuaMethod(F&& f) : f(std::forward<F>(f)), args_types(get_lua_types<Args...>()) {}
     
     void apply(lua_State* L) {
         apply_impl(L, std::index_sequence_for<Args...>{});
