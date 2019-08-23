@@ -106,13 +106,13 @@ struct LuaObject {
     
     
     template<typename... Args>
-    LuaObject& RegisterConstructor() {
+    [[nodiscard]] LuaObject& RegisterConstructor() {
         ctor = new constructor<T, Args...>{};
         return *this;
     }
     
     template<typename F>
-    LuaObject& RegisterMethod(std::string name, F&& f) {
+    [[nodiscard]] LuaObject& RegisterMethod(std::string name, F&& f) {
         auto L = ls.L;
         LUA_STACK_CHECK_START
         
