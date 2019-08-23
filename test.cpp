@@ -9,8 +9,6 @@
 
 #include "gtest/gtest.h"
 
-#include "LuaCast.h"
-
 #include <string>
 #include <iostream>
 
@@ -74,13 +72,6 @@ TEST_F(LuaScriptFixture, ObjectCreation) {
 //     .Finalize();
 //     
 //     ls.exec("new_object(2, true):printi()");
-}
-
-TEST(LuaCast, CastTest) {
-    lua_any a = 5;
-    ASSERT_EQ(a.get<int>(), 5);
-    a = 5.6;
-    ASSERT_EQ(a.get<double>(), 5.6);
 }
 
 //TODO: add proper unit tests
