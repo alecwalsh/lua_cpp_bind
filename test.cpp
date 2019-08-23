@@ -66,12 +66,12 @@ TEST_F(LuaScriptFixture, VariableRegistration) {
 }
 
 TEST_F(LuaScriptFixture, ObjectCreation) {
-//     LuaObject<Object>{ls, "object"}
-//     .RegisterConstructor<int, bool>()
-//     .RegisterMethod("printi", &Object::printi)
-//     .Finalize();
-//     
-//     ls.exec("new_object(2, true):printi()");
+    LuaObject<Object>{ls, "object"}
+    .RegisterConstructor<int, bool>()
+    .RegisterMethod("printi", &Object::printi)
+    .Finalize();
+    
+    ls.exec("new_object(2, true):printi()");
 }
 
 //TODO: add proper unit tests
@@ -93,11 +93,6 @@ int main(int argc, char* argv[]) {
     
     auto s = "abcd";
     ls.Register("var_test", s, LuaType::String);
-    
-    LuaObject<Object>{ls, "object"}
-    .RegisterConstructor<int, bool>()
-    .RegisterMethod("printi", &Object::printi)
-    .Finalize();
     
     ls.exec("call_cpp()");
     for(const auto [t1, t2] : table) {

@@ -10,6 +10,6 @@ function call_cpp()
     function_test(123)
     io.write(cpp.var_test .. "\n")
     
-    obj_test = new_object(2, true)
-    obj_test:printi()
+--     obj_test = new_object(2, true)
+--     obj_test:printi()
 end
